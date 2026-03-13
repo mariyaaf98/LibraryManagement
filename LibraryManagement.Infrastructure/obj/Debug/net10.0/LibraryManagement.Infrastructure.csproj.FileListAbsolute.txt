@@ -17,3 +17,4 @@ C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Infrastructure\obj\
 C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Infrastructure\obj\Debug\net10.0\LibraryManagement.Infrastructure.pdb
 C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Infrastructure\obj\Debug\net10.0\LibraryManagement.Infrastructure.genruntimeconfig.cache
 C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Infrastructure\obj\Debug\net10.0\ref\LibraryManagement.Infrastructure.dll
+C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Infrastructure\obj\Debug\net10.0\LibraryManagement.Infrastructure.sourcelink.json

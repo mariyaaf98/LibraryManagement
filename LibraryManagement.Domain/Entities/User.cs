@@ -1,18 +1,35 @@
-using LibraryManagement.Domain.CommonEntity;
+using LibraryManagement.Domain.LoanEntity;
+using LibraryManagement.Domain.ReservationEntity;
 
 namespace LibraryManagement.Domain.UserEntity;
-
-public class User : BaseEntity
+public class User
 {
-    public string Name { get; set; } = "";
+    public Guid Id { get; set; }
 
-    public string Email { get; set; } = "";
+    public string FullName { get; set; } = string.Empty;
 
-    public string Password { get; set; } = "";
+    public string Email { get; set; } = string.Empty;
 
-    public string Role { get; set; } = "";
+    public string PasswordHash { get; set; } = string.Empty;
 
-    public string Status { get; set; } = "";
+    public string Role { get; set; } = "MEMBER";
 
-    public decimal Fine { get; set; }
+    public string Status { get; set; } = "ACTIVE";
+
+    public string? Phone { get; set; }
+
+    public string? Address { get; set; }
+
+    public string? ExternalId { get; set; }
+
+    public decimal FinesOutstanding { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    public bool IsDeleted { get; set; } = false;
+
+    public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+     public ICollection<Reservation>? Reservations { get; set; }
 }

@@ -7,8 +7,6 @@ using LibraryManagement.Application.Interfaces;
 
 
 
-
-
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);

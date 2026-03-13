@@ -13,3 +13,4 @@ C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Application\obj\Deb
 C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Application\obj\Debug\net10.0\refint\LibraryManagement.Application.dll
 C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Application\obj\Debug\net10.0\LibraryManagement.Application.pdb
 C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Application\obj\Debug\net10.0\ref\LibraryManagement.Application.dll
+C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Application\obj\Debug\net10.0\LibraryManagement.Application.sourcelink.json

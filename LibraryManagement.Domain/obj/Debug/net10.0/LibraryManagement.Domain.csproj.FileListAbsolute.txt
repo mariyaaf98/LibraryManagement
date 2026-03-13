@@ -9,3 +9,4 @@ C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Domain\obj\Debug\ne
 C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Domain\obj\Debug\net10.0\refint\LibraryManagement.Domain.dll
 C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Domain\obj\Debug\net10.0\LibraryManagement.Domain.pdb
 C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Domain\obj\Debug\net10.0\ref\LibraryManagement.Domain.dll
+C:\Users\MariyaAF\Desktop\Capstone Project\LibraryManagement.Domain\obj\Debug\net10.0\LibraryManagement.Domain.sourcelink.json

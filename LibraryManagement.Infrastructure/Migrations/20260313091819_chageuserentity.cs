@@ -5,7 +5,7 @@
 namespace LibraryManagement.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateUserStructure : Migration
+    public partial class chageuserentity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -1,6 +1,6 @@
 using LibraryManagement.Domain.UserEntity;
 
-namespace LibraryManagement.Application.Interfaces;
+namespace LibraryManagement.Application.UserInterface;
 
 public interface IUserRepository
 {
@@ -8,9 +8,11 @@ public interface IUserRepository
 
     User? GetUserById(Guid id);
 
+    User? GetByEmail(string email);
+
     User CreateUser(User user);
 
     User UpdateUser(User user);
 
-    // bool DeleteUser(Guid id);
+    void DeleteUser(User user); 
 }

@@ -4,9 +4,8 @@ using LibraryManagement.Domain.BookEntity;
 
 namespace LibraryManagement.Domain.ReservationEntity;
 
-public class Reservation
+public class Reservation : BaseEntity
 {
-    public Guid Id { get; set; }
 
     public Guid UserId { get; set; }
 
@@ -15,8 +14,6 @@ public class Reservation
     public int Position { get; set; }
 
     public string State { get; set; } = "ACTIVE";
-
-    public DateTime CreatedAt { get; set; }
 
     public DateTime? ExpiresAt { get; set; }
 

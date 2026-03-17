@@ -3,9 +3,8 @@ using LibraryManagement.Domain.CategoryEntity;
 
 namespace LibraryManagement.Domain.SubCategoryEntity;
 
-public class SubCategory
+public class SubCategory : BaseEntity
 {
-    public Guid Id { get; set; }
 
     public string Name { get; set; } = string.Empty;
 
@@ -13,9 +12,6 @@ public class SubCategory
 
     public string? Description { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-
-    public bool IsDeleted { get; set; }
 
     public Category? Category { get; set; } 
 

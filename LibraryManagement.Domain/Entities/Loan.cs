@@ -5,7 +5,7 @@ namespace LibraryManagement.Domain.LoanEntity;
 
 public class Loan
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; }=Guid.NewGuid();
 
     public Guid UserId { get; set; }
 

@@ -1,10 +1,9 @@
 using LibraryManagement.Domain.LoanEntity;
 using LibraryManagement.Domain.ReservationEntity;
-
+using LibraryManagement.Domain.Enums;
 namespace LibraryManagement.Domain.UserEntity;
-public class User
+public class User : BaseEntity
 {
-    public Guid Id { get; set; }
 
     public string FullName { get; set; } = string.Empty;
 
@@ -14,7 +13,7 @@ public class User
 
     public string Role { get; set; } = "MEMBER";
 
-    public string Status { get; set; } = "ACTIVE";
+    public UserStatus Status { get; set; } = UserStatus.Active;
 
     public string? Phone { get; set; }
 
@@ -24,12 +23,7 @@ public class User
 
     public decimal FinesOutstanding { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-    public bool IsDeleted { get; set; } = false;
-
     public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+    
      public ICollection<Reservation>? Reservations { get; set; }
 }

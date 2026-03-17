@@ -1,0 +1,249 @@
+<!-- admin/books/books.html -->
+
+<!-- ── Toast ─────────────────────────────────── -->
+@if (toastMessage) {
+  <div class="toast"
+       [class.toast-success]="toastType === 'success'"
+       [class.toast-error]="toastType === 'error'">
+    {{ toastType === 'success' ? '✅' : '🗑️' }} {{ toastMessage }}
+  </div>
+}
+
+<!-- ── Page Header ────────────────────────────── -->
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Books</h2>
+    <p class="page-sub">Browse, search and manage all books in the library.</p>
+  </div>
+  <button class="btn-primary" (click)="openAddModal()">
+    ＋ Add New Book
+  </button>
+</div>
+
+<!-- ── Search + Filter Bar ───────────────────── -->
+<app-search-bar
+  [genres]="genres"
+  [availabilityOptions]="availability"
+  (searchChange)="searchText = $event">
+</app-search-bar>
+
+
+<!-- ── Summary ───────────────────────────────── -->
+<div class="summary-row">
+  <div class="summary-badge">
+    <span>📖</span>
+    <span>Total Books: <strong>{{ books.length }}</strong></span>
+  </div>
+  <div class="summary-badge">
+    <span>🔍</span>
+    <span>Showing: <strong>{{ filteredBooks.length }}</strong></span>
+  </div>
+</div>
+
+<!-- ── Books Table ────────────────────────────── -->
+<app-data-table
+  [columns]="tableColumns"
+  [data]="filteredBooks">
+</app-data-table>
+
+<!-- ── Book Detail Modal ──────────────────────── -->
+@if (showDetailModal && selectedBook) {
+  <div class="modal-overlay" (click)="closeDetailModal()">
+    <div class="modal-box detail-box" (click)="$event.stopPropagation()">
+
+      <div class="detail-header">
+
+        @if (selectedBook.coverImageUrl) {
+          <img class="detail-cover" [src]="selectedBook.coverImageUrl" [alt]="selectedBook.title" />
+        } @else {
+          <div class="detail-initial">{{ getInitial(selectedBook.title) }}</div>
+        }
+
+        <div>
+          <div class="detail-title">{{ selectedBook.title }}</div>
+          @if (selectedBook.subtitle) {
+            <div class="detail-subtitle">{{ selectedBook.subtitle }}</div>
+          }
+        </div>
+
+      </div>
+
+      <div class="detail-grid">
+
+        <div class="detail-item">
+          <span class="detail-label">ISBN</span>
+          <span class="detail-value">{{ selectedBook.isbn || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Edition</span>
+          <span class="detail-value">{{ selectedBook.edition || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Published Year</span>
+          <span class="detail-value">{{ selectedBook.publishedYear || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Language</span>
+          <span class="detail-value">{{ selectedBook.language || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Authors</span>
+          <span class="detail-value">{{ selectedBook.authors?.join(', ') || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Category</span>
+          <span class="detail-value">{{ selectedBook.categoryName || '—' }}</span>
+        </div>
+
+      </div>
+
+      @if (selectedBook.summary) {
+        <div class="detail-summary">
+          <div class="detail-label">Summary</div>
+          <p class="summary-text">{{ selectedBook.summary }}</p>
+        </div>
+      }
+
+      <div class="modal-buttons">
+        <button class="btn-secondary" (click)="closeDetailModal()">Close</button>
+        <button class="btn-primary" (click)="closeDetailModal(); openEditModal(selectedBook!)">✏️ Edit</button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- ── Add / Edit Modal ───────────────────────── -->
+
+
+<app-modal
+  [show]="showModal"
+  (close)="closeModal()"
+>
+
+  <div class="modal-title">
+    {{ isEditMode ? '✏️ Edit Book' : '📖 Add New Book' }}
+  </div>
+
+  <!-- Title -->
+  <div class="form-group">
+    <label class="form-label">
+      Title <span class="required">*</span>
+    </label>
+
+    <input
+      class="form-input"
+      [(ngModel)]="form.title"
+      placeholder="Enter book title"
+    />
+  </div>
+
+  <!-- Subtitle -->
+  <div class="form-group">
+    <label class="form-label">Subtitle</label>
+
+    <input
+      class="form-input"
+      [(ngModel)]="form.subtitle"
+      placeholder="Enter subtitle (optional)"
+    />
+  </div>
+
+  <!-- ISBN + Edition -->
+  <div class="form-row">
+
+    <div class="form-group">
+      <label class="form-label">ISBN</label>
+
+      <input
+        class="form-input"
+        [(ngModel)]="form.isbn"
+        placeholder="e.g. 978-3-16"
+      />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Edition</label>
+
+      <input
+        class="form-input"
+        [(ngModel)]="form.edition"
+        placeholder="e.g. 2nd Edition"
+      />
+    </div>
+
+  </div>
+
+  <!-- Year + Language -->
+  <div class="form-row">
+
+    <div class="form-group">
+      <label class="form-label">Published Year</label>
+
+      <input
+        class="form-input"
+        type="number"
+        [(ngModel)]="form.publishedYear"
+        placeholder="e.g. 2020"
+      />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Language</label>
+
+      <input
+        class="form-input"
+        [(ngModel)]="form.language"
+        placeholder="e.g. English"
+      />
+    </div>
+
+  </div>
+
+  <!-- Cover Image -->
+  <div class="form-group">
+    <label class="form-label">Cover Image URL</label>
+
+    <input
+      class="form-input"
+      [(ngModel)]="form.coverImageUrl"
+      placeholder="https://..."
+    />
+  </div>
+
+  <!-- Summary -->
+  <div class="form-group">
+    <label class="form-label">Summary</label>
+
+    <textarea
+      class="form-input"
+      rows="3"
+      [(ngModel)]="form.summary"
+    ></textarea>
+  </div>
+
+  <!-- Buttons -->
+  <div class="modal-buttons">
+
+    <button
+      class="btn-secondary"
+      (click)="closeModal()"
+    >
+      Cancel
+    </button>
+
+    <button
+      class="btn-primary"
+      (click)="saveBook()"
+    >
+      {{ isEditMode ? 'Update Book' : 'Create Book' }}
+    </button>
+
+  </div>
+
+</app-modal>

@@ -6,7 +6,7 @@ namespace LibraryManagement.Domain.BookAuthorEntity;
 
 public class BookAuthor
 {
-    public Guid BookId { get; set; }
+    public Guid BookId { get; set; }=Guid.NewGuid();
 
     public Guid AuthorId { get; set; }
 

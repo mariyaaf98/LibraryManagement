@@ -1,0 +1,174 @@
+<!-- admin/authors/authors.html -->
+
+<!-- ── Toast ─────────────────────────────────── -->
+@if (toastMessage) {
+  <div class="toast"
+       [class.toast-success]="toastType === 'success'"
+       [class.toast-error]="toastType === 'error'">
+    {{ toastType === 'success' ? '✅' : '🗑️' }} {{ toastMessage }}
+  </div>
+}
+
+<!-- ── Page Header ────────────────────────────── -->
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Authors</h2>
+    <p class="page-sub">Manage all book authors in the library.</p>
+  </div>
+  <button class="btn-primary" (click)="openAddModal()">
+    ＋ Add New Author
+  </button>
+</div>
+
+<!-- ── Search Bar ─────────────────────────────── -->
+<div class="search-bar">
+  <span class="search-icon">🔍</span>
+  <input
+    class="search-input"
+    [(ngModel)]="searchText"
+    placeholder="Search by name..." />
+
+  <!-- Clear search button — shows only when text is typed -->
+  @if (searchText) {
+    <button class="clear-btn" (click)="searchText = ''">✕</button>
+  }
+</div>
+
+<!-- ── Summary ───────────────────────────────── -->
+<div class="summary-row">
+  <div class="summary-badge">
+    <span>✍️</span>
+    <span>Total Authors: <strong>{{ authors.length }}</strong></span>
+  </div>
+  <div class="summary-badge">
+    <span>🔍</span>
+    <span>Showing: <strong>{{ filteredAuthors.length }}</strong></span>
+  </div>
+</div>
+
+<!-- ── Authors Table ──────────────────────────── -->
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Author</th>
+        <th>Given Name</th>
+        <th>Family Name</th>
+        <th>Birth Date</th>
+        <th>Biography</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      @for (author of filteredAuthors; track author.id; let i = $index) {
+        <tr>
+
+          <td class="row-num">{{ i + 1 }}</td>
+
+          <!-- Name + Avatar -->
+          <td>
+            <div class="name-cell">
+              <div class="avatar">{{ getInitial(author.fullName) }}</div>
+              <span class="author-name">{{ author.fullName }}</span>
+            </div>
+          </td>
+
+          <td class="text-sub">{{ author.givenName  || '—' }}</td>
+          <td class="text-sub">{{ author.familyName || '—' }}</td>
+
+          <!-- Birth date — formatted nicely -->
+          <td class="text-sub">
+            {{ author.birthDate ? (author.birthDate | date: 'dd MMM yyyy') : '—' }}
+          </td>
+
+          <!-- Biography — cut long text with ... -->
+          <td class="text-sub bio-cell">
+            {{ author.biography ? (author.biography.length > 60
+              ? (author.biography | slice:0:60) + '...'
+              : author.biography)
+              : '—' }}
+          </td>
+
+          <td>
+            <div class="action-buttons">
+              <button class="btn-edit"   (click)="openEditModal(author)">✏️ Edit</button>
+              <button class="btn-danger" (click)="deleteAuthor(author.id!)">🗑️ Delete</button>
+            </div>
+          </td>
+
+        </tr>
+      }
+
+      <!-- No results -->
+      @if (filteredAuthors.length === 0) {
+        <tr>
+          <td colspan="7" class="empty-msg">
+            @if (searchText) {
+              No authors found for "{{ searchText }}"
+            } @else {
+              No authors found.
+            }
+          </td>
+        </tr>
+      }
+
+    </tbody>
+  </table>
+</div>
+
+<!-- ── Add / Edit Modal ───────────────────────── -->
+@if (showModal) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+
+      <div class="modal-title">
+        {{ isEditMode ? '✏️ Edit Author' : '✍️ Add New Author' }}
+      </div>
+
+      <!-- Full Name -->
+      <div class="form-group">
+        <label class="form-label">Full Name <span class="required">*</span></label>
+        <input class="form-input" [(ngModel)]="form.fullName" placeholder="e.g. J.K. Rowling" />
+      </div>
+
+      <!-- Two column row: Given + Family -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Given Name</label>
+          <input class="form-input" [(ngModel)]="form.givenName" placeholder="e.g. Joanne" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Family Name</label>
+          <input class="form-input" [(ngModel)]="form.familyName" placeholder="e.g. Rowling" />
+        </div>
+      </div>
+
+      <!-- Birth Date -->
+      <div class="form-group">
+        <label class="form-label">Birth Date</label>
+        <input class="form-input" type="date" [(ngModel)]="form.birthDate" />
+      </div>
+
+      <!-- Biography -->
+      <div class="form-group">
+        <label class="form-label">Biography</label>
+        <textarea
+          class="form-input"
+          [(ngModel)]="form.biography"
+          placeholder="Short biography..."
+          rows="3">
+        </textarea>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn-secondary" (click)="closeModal()">Cancel</button>
+        <button class="btn-primary"   (click)="saveAuthor()">
+          {{ isEditMode ? 'Update Author' : 'Create Author' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

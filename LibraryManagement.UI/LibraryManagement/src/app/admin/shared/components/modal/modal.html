@@ -1,0 +1,13 @@
+@if(show){
+
+<div class="modal-overlay" (click)="closeModal()">
+
+  <div class="modal-box" (click)="$event.stopPropagation()">
+
+    <ng-content></ng-content>
+
+  </div>
+
+</div>
+
+}

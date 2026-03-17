@@ -1,9 +1,8 @@
-// admin/users/users.ts
-// Users page — Add, Edit/Update, Delete users
-
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UserService } from '../../services/user.service';
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-users',
@@ -12,123 +11,250 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './users.html',
   styleUrl: './users.css'
 })
-export class UsersComponent {
+export class UsersComponent implements OnInit {
 
-  // ── Modal control ─────────────────────────────────────────────
-  showModal  = false;
-  isEditMode = false;    // false = Add mode, true = Edit mode
-  editingId  = 0;        // stores the id of the user being edited
+  private userService = inject(UserService);
 
-  // ── Toast notification ────────────────────────────────────────
+  // ── Modal control ─────────────────────────────
+  showModal = false;
+  isEditMode = false;
+  editingId = '';
+
+  // ── Toast ─────────────────────────────────────
   toastMessage = '';
-  toastType    = '';
+  toastType = '';
 
-  // ── Form fields (used for both Add and Edit) ──────────────────
+  // ── Form ──────────────────────────────────────
   form = {
-    name:   '',
-    email:  '',
-    phone:  '',
-    status: 'Active'
+    name: '',
+    email: '',
+    password: '',
+    phone: '',
+    status: 'Active',
+    role: 'MEMBER'
   };
 
-  // ── Users list ────────────────────────────────────────────────
-  users = [
-    { id: 1, name: 'Aisha Rahman', email: 'aisha@email.com',  phone: '012-3456789', status: 'Active'   },
-    { id: 2, name: 'Ben Tan',      email: 'ben@email.com',    phone: '011-9876543', status: 'Active'   },
-    { id: 3, name: 'Chitra Nair',  email: 'chitra@email.com', phone: '019-1122334', status: 'Inactive' },
-    { id: 4, name: 'David Lim',    email: 'david@email.com',  phone: '017-5566778', status: 'Active'   },
-    { id: 5, name: 'Evan Raj',     email: 'evan@email.com',   phone: '016-9988776', status: 'Active'   },
-  ];
+  // ── Users ─────────────────────────────────────
+  users: User[] = [];
 
-  // ── Open modal for ADD ────────────────────────────────────────
-  openAddModal() {
-    this.isEditMode = false;          // set to ADD mode
-    this.editingId  = 0;
-    this.form = { name: '', email: '', phone: '', status: 'Active' };
-    this.showModal = true;
+  ngOnInit() {
+    this.loadUsers();
   }
 
-  // ── Open modal for EDIT ───────────────────────────────────────
-  // fill the form with the selected user's data
-  openEditModal(user: any) {
-    this.isEditMode = true;           // set to EDIT mode
-    this.editingId  = user.id;        // remember which user we are editing
+  // ── Load Users ────────────────────────────────
+  loadUsers() {
+    this.userService.getUsers().subscribe({
+      next: (data) => this.users = data,
+      error: () => this.showToast('Failed to load users', 'error')
+    });
+  }
 
-    // fill the form with existing data
+
+  selectedRole: string = 'ALL';
+searchText: string = '';
+
+get filteredUsers(): User[] {
+  return this.users.filter(user => {
+
+    const roleMatch =
+      this.selectedRole === 'ALL' ||
+      user.role === this.selectedRole;
+
+    const searchMatch =
+      user.fullName.toLowerCase().includes(this.searchText.toLowerCase()) ||
+      user.email.toLowerCase().includes(this.searchText.toLowerCase());
+
+    return roleMatch && searchMatch;
+  });
+}
+  // ── Open Add Modal ────────────────────────────
+  openAddModal() {
+    this.isEditMode = false;
+    this.editingId = '';
+
     this.form = {
-      name:   user.name,
-      email:  user.email,
-      phone:  user.phone,
-      status: user.status
+      name: '',
+      email: '',
+      password: '',
+      phone: '',
+      status: 'Active',  
+      role: 'MEMBER'
     };
 
     this.showModal = true;
   }
 
-  // ── Close modal ───────────────────────────────────────────────
+  // ── Open Edit Modal ───────────────────────────
+  openEditModal(user: User) {
+    this.isEditMode = true;
+    this.editingId = user.id;
+
+    this.form = {
+      name: user.fullName,
+      email: user.email,
+      password: '',
+      phone: '',
+      status: user.status, 
+      role: user.role
+    };
+
+    this.showModal = true;
+  }
+
+  // ── Close Modal ───────────────────────────────
   closeModal() {
     this.showModal = false;
   }
 
-  // ── Save — decides Add or Update based on isEditMode ─────────
+  // ── Save User ────────────────────────────────
   saveUser() {
-    // Validate required fields
-    if (!this.form.name || !this.form.email) {
-      this.showToast('Please fill in Name and Email!', 'error');
+
+    const name = this.form.name.trim();
+
+    // ── NAME VALIDATION ─────────────────────────
+    if (!name) {
+      this.showToast('Name is required!', 'error');
       return;
     }
 
-    if (this.isEditMode) {
-      // ── UPDATE existing user ──
-      // find the user in the array and update their data
-      const index = this.users.findIndex(u => u.id === this.editingId);
-      if (index !== -1) {
-        this.users[index] = {
-          id:     this.editingId,
-          name:   this.form.name,
-          email:  this.form.email,
-          phone:  this.form.phone,
-          status: this.form.status
-        };
-      }
-      this.showToast('User updated successfully!', 'success');
-
-    } else {
-      // ── ADD new user ──
-      const newUser = {
-        id:     Date.now(),
-        name:   this.form.name,
-        email:  this.form.email,
-        phone:  this.form.phone,
-        status: this.form.status
-      };
-      this.users.push(newUser);
-      this.showToast('User created successfully!', 'success');
+    if (name.length < 2) {
+      this.showToast('Name must be at least 2 characters!', 'error');
+      return;
     }
 
-    this.showModal = false;
+    if (name.length > 50) {
+      this.showToast('Name too long!', 'error');
+      return;
+    }
+
+    const namePattern = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
+
+    if (!namePattern.test(name)) {
+      this.showToast('Name should contain only letters and single spaces!', 'error');
+      return;
+    }
+
+    // ── REQUIRED VALIDATION ─────────────────────
+    if (
+      !this.form.name?.trim() ||
+      !this.form.email?.trim() ||
+      !this.form.role ||
+      (!this.isEditMode && !this.form.password)
+    ) {
+      this.showToast('Please fill all required fields correctly!', 'error');
+      return;
+    }
+
+    // ── EMAIL VALIDATION ────────────────────────
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(this.form.email)) {
+      this.showToast('Invalid email format!', 'error');
+      return;
+    }
+
+    // ── PASSWORD VALIDATION ─────────────────────
+    if (!this.isEditMode && this.form.password.length < 6) {
+      this.showToast('Password must be at least 6 characters!', 'error');
+      return;
+    }
+
+    // ───── UPDATE ─────
+    if (this.isEditMode) {
+
+      const updatedUser = {
+        fullName: this.form.name,
+        email: this.form.email,
+        phone: this.form.phone,
+        address: '',
+        externalId: '',
+        role: this.form.role,
+        status: this.form.status   
+      };
+
+      this.userService.updateUser(this.editingId, updatedUser).subscribe({
+        next: () => {
+          this.showToast('User updated successfully!', 'success');
+          this.loadUsers();
+          this.closeModal();
+        },
+        error: (err) => {
+  this.showToast(this.getErrorMessage(err), 'error');
+}
+      });
+    }
+
+    // ───── CREATE ─────
+    else {
+
+      const newUser = {
+        fullName: this.form.name,
+        email: this.form.email,
+        password: this.form.password,
+        phone: this.form.phone,
+        address: null,
+        externalId: null,
+        role: this.form.role,
+        status: this.form.status   
+      };
+
+      this.userService.createUser(newUser).subscribe({
+        next: () => {
+          this.showToast('User created successfully!', 'success');
+          this.loadUsers();
+          this.closeModal();
+        },
+        error: (err) => {
+  this.showToast(this.getErrorMessage(err), 'error');
+}
+      });
+    }
   }
 
-  // ── Delete user ───────────────────────────────────────────────
-  deleteUser(id: number) {
-    this.users = this.users.filter(u => u.id !== id);
-    this.showToast('User deleted.', 'error');
+
+  getErrorMessage(err: any): string {
+  if (typeof err.error === 'string') return err.error;
+
+  if (err.error?.message) return err.error.message;
+
+  if (err.error?.title) return err.error.title;
+
+  if (err.error?.errors) {
+    const key = Object.keys(err.error.errors)[0];
+    return err.error.errors[key][0];
   }
 
-  // ── Toast helper ──────────────────────────────────────────────
+  return 'Something went wrong';
+}
+
+  // ── Delete ───────────────────────────────────
+ deleteUser(id: string) {
+  this.userService.deleteUser(id).subscribe({
+    next: () => {
+      this.loadUsers();
+
+      this.showToast('User deleted successfully!', 'success');
+    },
+    error: (err) => {
+      this.showToast(this.getErrorMessage(err), 'error');
+    }
+  });
+}
+  // ── Toast ────────────────────────────────────
   showToast(message: string, type: string) {
     this.toastMessage = message;
-    this.toastType    = type;
-    setTimeout(() => { this.toastMessage = ''; }, 2500);
+    this.toastType = type;
+
+    setTimeout(() => this.toastMessage = '', 2500);
   }
 
-  // ── Avatar initial ────────────────────────────────────────────
+  // ── Avatar Initial ───────────────────────────
   getInitial(name: string): string {
     return name.charAt(0).toUpperCase();
   }
 
-  // ── Count active users ────────────────────────────────────────
+  // ── Active Count ─────────────────────────────
   get activeCount(): number {
-    return this.users.filter(u => u.status === 'Active').length;
+    return this.users.filter(u => u.status === 'Active').length; 
   }
 }

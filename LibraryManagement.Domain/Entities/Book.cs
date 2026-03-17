@@ -6,9 +6,8 @@ using LibraryManagement.Domain.SubCategoryEntity;
 
 namespace LibraryManagement.Domain.BookEntity;
 
-public class Book
+public class Book : BaseEntity
 {
-    public Guid Id { get; set; }
 
     public string Title { get; set; } = string.Empty;
 
@@ -25,12 +24,6 @@ public class Book
     public string? Summary { get; set; }
 
     public string? CoverImageUrl { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
-
-    public bool IsDeleted { get; set; }
 
 
     // Foreign Key

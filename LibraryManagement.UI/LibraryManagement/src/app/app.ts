@@ -8,20 +8,20 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet,       // ✅ needed for <router-outlet> in app.html
-    RouterLink,         // ✅ needed for [routerLink] in app.html
-    RouterLinkActive    // ✅ needed for routerLinkActive in app.html
+    RouterOutlet,      
+    RouterLink,         
+    RouterLinkActive    
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class AppComponent {   // ✅ must be named AppComponent
+export class AppComponent { 
 
   // Sidebar menu items
   navItems = [
     { label: 'Dashboard',  icon: '🏠', link: '/admin/dashboard'  },
     { label: 'Users',      icon: '👤', link: '/admin/users'       },
-    { label: 'Librarians', icon: '📚', link: '/admin/librarians'  },
-    { label: 'System',     icon: '⚙️', link: '/admin/system'      },
+    { label: 'Authors',    icon: '✍️', link: '/admin/authors'     },
+    { label: 'Books',      icon: '📖', link: '/admin/books'       },
   ];
 }

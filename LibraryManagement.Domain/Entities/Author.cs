@@ -1,9 +1,8 @@
 using LibraryManagement.Domain.BookAuthorEntity;
 namespace LibraryManagement.Domain.AuthorEntity;
-public class Author
+public class Author : BaseEntity
 {
-    public Guid Id { get; set; }
-
+    
     public string? GivenName { get; set; }
 
     public string? FamilyName { get; set; }
@@ -16,11 +15,6 @@ public class Author
 
     public string? Biography { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
-
-    public bool IsDeleted { get; set; }
 
     public ICollection<BookAuthor>? BookAuthors { get; set; }
 }

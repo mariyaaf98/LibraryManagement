@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using LibraryManagement.Domain.UserEntity;
-using LibraryManagement.Application.Services;
+using LibraryManagement.Application.UserService;
+using LibraryManagement.Application.DTOs.User;
+
 
 namespace LibraryManagement.API.Controllers;
 
@@ -15,7 +16,7 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
-    // Get all users
+    // ── Get all users ───────────────────────────
     [HttpGet]
     public IActionResult GetUsers()
     {
@@ -23,74 +24,76 @@ public class UserController : ControllerBase
         return Ok(users);
     }
 
-    // Get user by Id
+    // ── Get by Id ───────────────────────────────
     [HttpGet("{id}")]
     public IActionResult GetUserById(string id)
     {
-
         if (!Guid.TryParse(id, out Guid userId))
-        {
             return BadRequest("Invalid user ID format");
-        }
 
         var user = _userService.GetUserById(userId);
 
         if (user == null)
-        {
             return NotFound("User not found");
-        }
 
         return Ok(user);
     }
 
-    // Create new user
+    // ── Create ──────────────────────────────────
     [HttpPost]
-    public IActionResult CreateUser([FromBody] User user)
+    public IActionResult CreateUser([FromBody] CreateUserDto dto)
     {
-        var result = _userService.CreateUser(user);
-        return Ok(result);
+        // BASIC VALIDATION (Controller level)
+        if (string.IsNullOrWhiteSpace(dto.FullName) ||
+            string.IsNullOrWhiteSpace(dto.Email) ||
+            string.IsNullOrWhiteSpace(dto.Password))
+        {
+            return BadRequest("Name, Email and Password are required");
+        }
+
+        try
+        {
+            var result = _userService.CreateUser(dto);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
-    // Update existing user
+    // ── Update ──────────────────────────────────
     [HttpPut("{id}")]
-    public IActionResult UpdateUser(string id, [FromBody] User user)
+    public IActionResult UpdateUser(string id, [FromBody] UpdateUserDto dto)
     {
         if (!Guid.TryParse(id, out Guid userId))
-        {
             return BadRequest("Invalid user ID format");
-        }
 
-        if (userId != user.Id)
+        if (string.IsNullOrWhiteSpace(dto.FullName) ||
+            string.IsNullOrWhiteSpace(dto.Email))
         {
-            return BadRequest("User ID mismatch");
+            return BadRequest("Name and Email are required");
         }
 
-        var updatedUser = _userService.UpdateUser(user);
+        var updatedUser = _userService.UpdateUser(userId, dto);
 
         if (updatedUser == null)
-        {
             return NotFound("User not found");
-        }
 
         return Ok(updatedUser);
     }
 
-
-    // Delete user
+    // ── Delete ──────────────────────────────────
     [HttpDelete("{id}")]
-    public IActionResult DeleteUser(String id)
+    public IActionResult DeleteUser(string id)
     {
-        if(!Guid.TryParse(id, out Guid userId))
-        {
+        if (!Guid.TryParse(id, out Guid userId))
             return BadRequest("Invalid user ID format");
-        }
-        
+
         var deleted = _userService.DeleteUser(userId);
 
         if (!deleted)
-        {
             return NotFound("User not found");
-        }
 
         return Ok("User deleted successfully");
     }

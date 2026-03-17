@@ -44,6 +44,10 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<User>()
+        .Property(u => u.Status)
+        .HasConversion<string>();
+
 
         // Category → SubCategory (One-to-Many)
         modelBuilder.Entity<SubCategory>()

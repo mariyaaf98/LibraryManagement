@@ -3,9 +3,8 @@ using LibraryManagement.Domain.LoanEntity;
 
 namespace LibraryManagement.Domain.CopyEntity;
 
-public class Copy
+public class Copy : BaseEntity
 {
-    public Guid Id { get; set; }
 
     public Guid BookId { get; set; }
 
@@ -21,9 +20,6 @@ public class Copy
 
     public string? Notes { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
 
     public Book? Book { get; set; }
 

@@ -26,10 +26,8 @@ public class Book : BaseEntity
     public string? CoverImageUrl { get; set; }
 
 
-    // Foreign Key
     public Guid SubCategoryId { get; set; }
 
-    // Navigation Property
     public SubCategory? SubCategory { get; set; }
 
 

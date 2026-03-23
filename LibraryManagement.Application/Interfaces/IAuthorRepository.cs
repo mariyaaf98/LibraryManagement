@@ -1,14 +1,11 @@
 using LibraryManagement.Domain.AuthorEntity;
 
-namespace LibraryManagement.Application.AuthorInterface;
+namespace LibraryManagement.Application.AuthorRepository;
 
 public interface IAuthorRepository
 {
-    List<Author> GetAuthors();
-
-    Author? GetAuthorById(Guid id);
-
-    Author CreateAuthor(Author author);
-
-    Author UpdateAuthor(Author author);
+    Task<List<Author>> GetAllActiveAsync();
+    Task<Author?> GetByIdAsync(Guid id);
+    Task<Author> AddAsync(Author author);
+    Task UpdateAsync(Author author);
 }

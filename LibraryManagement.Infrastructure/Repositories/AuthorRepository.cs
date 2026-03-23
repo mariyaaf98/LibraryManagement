@@ -1,5 +1,6 @@
-using LibraryManagement.Application.AuthorInterface;
+using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Domain.AuthorEntity;
+using LibraryManagement.Application.AuthorRepository;
 using LibraryManagement.Infrastructure.Data;
 
 namespace LibraryManagement.Infrastructure.Repositories;
@@ -13,29 +14,31 @@ public class AuthorRepository : IAuthorRepository
         _context = context;
     }
 
-    public List<Author> GetAuthors()
+    public async Task<List<Author>> GetAllActiveAsync()
     {
-        return _context.Authors.Where(a => !a.IsDeleted).ToList();
+        return await _context.Authors
+            .Where(a => !a.IsDeleted)
+            .AsNoTracking()
+            .ToListAsync();
     }
 
-    public Author? GetAuthorById(Guid id)
+    public async Task<Author?> GetByIdAsync(Guid id)
     {
-        return _context.Authors.FirstOrDefault(a => a.Id == id && !a.IsDeleted);
+        return await _context.Authors
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Id == id && !a.IsDeleted);
     }
 
-    public Author CreateAuthor(Author author)
+    public async Task<Author> AddAsync(Author author)
     {
-        _context.Authors.Add(author);
-        _context.SaveChanges();
-
+        await _context.Authors.AddAsync(author);
+        await _context.SaveChangesAsync();
         return author;
     }
 
-    public Author UpdateAuthor(Author author)
+    public async Task UpdateAsync(Author author)
     {
-        _context.Authors.Update(author);
-        _context.SaveChanges();
-
-        return author;
+        _context.Entry(author).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
     }
 }

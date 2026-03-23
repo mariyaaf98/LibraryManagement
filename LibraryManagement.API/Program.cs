@@ -12,7 +12,7 @@ using LibraryManagement.Application.AuthorService;
 using LibraryManagement.Application.CategoryService;
 //-----------------------------------------------------
 using LibraryManagement.Application.UserInterface;
-using LibraryManagement.Application.AuthorInterface;
+using LibraryManagement.Application.AuthorRepository;
 // using LibraryManagement.Application.BookInterface;
 using LibraryManagement.Application.CategoryInterface;
 //----------------------------------------------------

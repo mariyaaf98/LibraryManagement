@@ -23,6 +23,8 @@ public class Loan
 
     public string? Notes { get; set; }
 
+    //not create column
+    //helps in code navigation
     public User? User { get; set; }
 
     public Copy? Copy { get; set; }

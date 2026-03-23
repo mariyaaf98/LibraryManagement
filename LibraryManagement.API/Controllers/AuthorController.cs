@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using LibraryManagement.API.DTOs.Author;
 using LibraryManagement.Domain.AuthorEntity;
-using LibraryManagement.Application.AuthorService;
+using LibraryManagement.Application.AuthorRepository;
 
 namespace LibraryManagement.API.Controllers;
 
@@ -8,83 +9,117 @@ namespace LibraryManagement.API.Controllers;
 [Route("api/author")]
 public class AuthorController : ControllerBase
 {
-    private readonly AuthorService _authorService;
+    private readonly IAuthorRepository _repository;
 
-    public AuthorController(AuthorService authorService)
+    public AuthorController(IAuthorRepository repository)
     {
-        _authorService = authorService;
+        _repository = repository;
     }
 
+    
     [HttpGet]
-    public IActionResult GetAuthors()
+    public async Task<IActionResult> GetAuthors()
     {
-        var authors = _authorService.GetAuthors();
-        return Ok(authors);
-    }
+        var authors = await _repository.GetAllActiveAsync();
 
-    [HttpGet("{id}")]
-    public IActionResult GetAuthorById(string id)
-    {
-        if (!Guid.TryParse(id, out Guid authorId))
+        var result = authors.Select(a => new AuthorResponseDto
         {
-            return BadRequest("Invalid author ID format");
-        }
+            Id = a.Id,
+            FullName = a.FullName,
+            BirthDate = a.BirthDate
+        });
 
-        var author = _authorService.GetAuthorById(authorId);
-
-        if (author == null)
-        {
-            return NotFound("Author not found");
-        }
-
-        return Ok(author);
-    }
-
-    [HttpPost]
-    public IActionResult CreateAuthor([FromBody] Author author)
-    {
-        var result = _authorService.CreateAuthor(author);
         return Ok(result);
     }
 
-    [HttpPut("{id}")]
-    public IActionResult UpdateAuthor(string id, [FromBody] Author author)
+    
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAuthorById(Guid id)
     {
-        if (!Guid.TryParse(id, out Guid authorId))
-        {
-            return BadRequest("Invalid author ID format");
-        }
+        var author = await _repository.GetByIdAsync(id);
 
-        if (authorId != author.Id)
-        {
-            return BadRequest("Author ID mismatch");
-        }
-
-        var updatedAuthor = _authorService.UpdateAuthor(author);
-
-        if (updatedAuthor == null)
-        {
+        if (author == null)
             return NotFound("Author not found");
-        }
 
-        return Ok(updatedAuthor);
+        var result = new AuthorResponseDto
+        {
+            Id = author.Id,
+            FullName = author.FullName,
+            BirthDate = author.BirthDate
+        };
+
+        return Ok(result);
     }
 
-    [HttpDelete("{id}")]
-    public IActionResult DeleteAuthor(string id)
+    
+    [HttpPost]
+    public async Task<IActionResult> CreateAuthor([FromBody] CreateAuthorDto dto)
     {
-        if (!Guid.TryParse(id, out Guid authorId))
+        var author = new Author
         {
-            return BadRequest("Invalid author ID format");
-        }
+            GivenName = dto.GivenName,
+            FamilyName = dto.FamilyName,
+            FullName = $"{dto.GivenName} {dto.FamilyName}",
+            BirthDate = dto.BirthDate,
+            Biography = dto.Biography,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
 
-        var deleted = _authorService.DeleteAuthor(authorId);
+        await _repository.AddAsync(author);
 
-        if (!deleted)
+        var result = new AuthorResponseDto
         {
+            Id = author.Id,
+            FullName = author.FullName,
+            BirthDate = author.BirthDate
+        };
+
+        return Ok(result);
+    }
+
+   
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAuthor(Guid id, [FromBody] UpdateAuthorDto dto)
+    {
+        if (id != dto.Id)
+            return BadRequest("ID mismatch");
+
+        var author = await _repository.GetByIdAsync(id);
+
+        if (author == null)
             return NotFound("Author not found");
-        }
 
-        return Ok("Author deleted successfully");
+        author.GivenName = dto.GivenName;
+        author.FamilyName = dto.FamilyName;
+        author.FullName = $"{dto.GivenName ?? ""} {dto.FamilyName ?? ""}".Trim();
+
+        author.BirthDate = dto.BirthDate.HasValue
+            ? DateTime.SpecifyKind(dto.BirthDate.Value, DateTimeKind.Utc)
+            : null;
+
+        author.Biography = dto.Biography;
+        author.UpdatedAt = DateTime.UtcNow;
+
+        await _repository.UpdateAsync(author);
+
+        return NoContent();
+    }
+
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAuthor(Guid id)
+    {
+        var author = await _repository.GetByIdAsync(id);
+
+        if (author == null)
+            return NotFound("Author not found");
+
+        author.IsDeleted = true;
+        author.UpdatedAt = DateTime.UtcNow;
+
+        await _repository.UpdateAsync(author);
+
+        return NoContent();
     }
 }

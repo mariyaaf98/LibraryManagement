@@ -1,5 +1,6 @@
 using LibraryManagement.Domain.AuthorEntity;
-using LibraryManagement.Application.AuthorInterface;
+using LibraryManagement.Application.AuthorRepository;
+using LibraryManagement.API.DTOs.Author;
 
 namespace LibraryManagement.Application.AuthorService;
 
@@ -12,49 +13,99 @@ public class AuthorService
         _authorRepository = repository;
     }
 
-    public List<Author> GetAuthors()
+
+    public async Task<List<AuthorResponseDto>> GetAllAsync()
     {
-        return _authorRepository.GetAuthors();
+        var authors = await _authorRepository.GetAllActiveAsync();
+
+        return authors.Select(a => new AuthorResponseDto
+        {
+            Id = a.Id,
+            FullName = a.FullName,
+            BirthDate = a.BirthDate
+        }).ToList();
     }
 
-    public Author? GetAuthorById(Guid id)
+
+    public async Task<AuthorResponseDto?> GetByIdAsync(Guid id)
     {
-        return _authorRepository.GetAuthorById(id);
+        var author = await _authorRepository.GetByIdAsync(id);
+
+        if (author == null)
+            return null;
+
+        return new AuthorResponseDto
+        {
+            Id = author.Id,
+            FullName = author.FullName,
+            BirthDate = author.BirthDate
+        };
     }
 
-    public Author CreateAuthor(Author author)
+
+    public async Task<AuthorResponseDto> CreateAsync(CreateAuthorDto dto)
     {
-        return _authorRepository.CreateAuthor(author);
+        var author = new Author
+        {
+            GivenName = dto.GivenName,
+            FamilyName = dto.FamilyName,
+            FullName = $"{dto.GivenName ?? ""} {dto.FamilyName ?? ""}".Trim(),
+
+            BirthDate = dto.BirthDate.HasValue
+                ? DateTime.SpecifyKind(dto.BirthDate.Value, DateTimeKind.Utc)
+                : null,
+
+            Biography = dto.Biography,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        await _authorRepository.AddAsync(author);
+
+        return new AuthorResponseDto
+        {
+            Id = author.Id,
+            FullName = author.FullName,
+            BirthDate = author.BirthDate
+        };
     }
 
-    public Author? UpdateAuthor(Author author)
+
+    public async Task<bool> UpdateAsync(UpdateAuthorDto dto)
     {
-        var existingAuthor = _authorRepository.GetAuthorById(author.Id);
+        var existingAuthor = await _authorRepository.GetByIdAsync(dto.Id);
 
         if (existingAuthor == null || existingAuthor.IsDeleted)
-        {
-            return null;
-        }
+            return false;
 
-        author.CreatedAt = existingAuthor.CreatedAt;
-        author.UpdatedAt = DateTime.UtcNow;
+        existingAuthor.GivenName = dto.GivenName;
+        existingAuthor.FamilyName = dto.FamilyName;
+        existingAuthor.FullName = $"{dto.GivenName ?? ""} {dto.FamilyName ?? ""}".Trim();
 
-        return _authorRepository.UpdateAuthor(author);
+        existingAuthor.BirthDate = dto.BirthDate.HasValue
+            ? DateTime.SpecifyKind(dto.BirthDate.Value, DateTimeKind.Utc)
+            : null;
+
+        existingAuthor.Biography = dto.Biography;
+        existingAuthor.UpdatedAt = DateTime.UtcNow;
+
+        await _authorRepository.UpdateAsync(existingAuthor);
+
+        return true;
     }
 
-    public bool DeleteAuthor(Guid authorId)
+    // ✅ DELETE (Soft Delete)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        var author = _authorRepository.GetAuthorById(authorId);
+        var author = await _authorRepository.GetByIdAsync(id);
 
         if (author == null || author.IsDeleted)
-        {
             return false;
-        }
 
         author.IsDeleted = true;
         author.UpdatedAt = DateTime.UtcNow;
 
-        _authorRepository.UpdateAuthor(author);
+        await _authorRepository.UpdateAsync(author);
 
         return true;
     }

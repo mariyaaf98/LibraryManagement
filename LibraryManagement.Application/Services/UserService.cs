@@ -1,116 +1,106 @@
 using LibraryManagement.Domain.UserEntity;
 using LibraryManagement.Application.UserInterface;
 using LibraryManagement.Application.DTOs.User;
-using LibraryManagement.Domain.Enums;
 
 namespace LibraryManagement.Application.UserService;
 
+
 public class UserService
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserRepository _repository;
 
     public UserService(IUserRepository repository)
     {
-        _userRepository = repository;
+        _repository = repository;
     }
 
-    // ── Get all ─────────────────────────────────
-    public List<UserDto> GetUsers()
+    
+    public async Task<IEnumerable<UserResponseDto>> GetAllAsync()
     {
-        var users = _userRepository.GetUsers();
-        return users.Select(u => MapToDto(u)).ToList();
+        var users = await _repository.GetAllAsync();
+
+        return users.Select(u => new UserResponseDto
+        {
+            Id = u.Id,
+            FullName = u.FullName,
+            Email = u.Email,
+            Role = u.Role,
+            Phone = u.Phone,
+            FinesOutstanding = u.FinesOutstanding
+        });
     }
 
-    // ── Get by Id ───────────────────────────────
-    public UserDto? GetUserById(Guid id)
+   
+    public async Task<UserResponseDto?> GetByIdAsync(Guid id)
     {
-        var user = _userRepository.GetUserById(id);
+        var user = await _repository.GetByIdAsync(id);
         if (user == null) return null;
 
-        return MapToDto(user);
-    }
-
-    // ── Create ──────────────────────────────────
-    public UserDto CreateUser(CreateUserDto dto)
-{
-    var existingUser = _userRepository.GetByEmail(dto.Email);
-    if (existingUser != null)
-        throw new Exception("Email already exists");
-
-    if (dto.Password.Length < 6)
-        throw new Exception("Password must be at least 6 characters");
-
-    var user = new User
-    {
-        FullName = dto.FullName,
-        Email = dto.Email,
-        Phone = dto.Phone,
-        Address = dto.Address,
-        ExternalId = dto.ExternalId,
-
-        Role = dto.Role,
-
-        PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-        Status = dto.Status,
-        CreatedAt = DateTime.UtcNow
-    };
-
-    var createdUser = _userRepository.CreateUser(user);
-
-    return MapToDto(createdUser);
-}
-
-    // ── Update ──────────────────────────────────
-    public UserDto? UpdateUser(Guid id, UpdateUserDto dto)
-    {
-        var user = _userRepository.GetUserById(id);
-        if (user == null) return null;
-
-        // Optional: prevent duplicate email
-        var existingUser = _userRepository.GetByEmail(dto.Email);
-        if (existingUser != null && existingUser.Id != id)
-            throw new Exception("Email already exists");
-
-        user.FullName = dto.FullName;
-        user.Email = dto.Email;
-        user.Phone = dto.Phone;
-        user.Address = dto.Address;
-        user.ExternalId = dto.ExternalId;
-        user.UpdatedAt = DateTime.UtcNow;
-        user.Status = dto.Status;
-
-        var updatedUser = _userRepository.UpdateUser(user);
-
-        return MapToDto(updatedUser);
-    }
-
-    // ── Delete ──────────────────────────────────
-    public bool DeleteUser(Guid userId)
-    {
-        var user = _userRepository.GetUserById(userId);
-
-        if (user == null || user.IsDeleted)
-            return false;
-
-        user.IsDeleted = true;
-        user.UpdatedAt = DateTime.UtcNow;
-
-        _userRepository.UpdateUser(user);
-
-        return true;
-    }
-
-    // ── Mapping ─────────────────────────────────
-    private UserDto MapToDto(User user)
-    {
-        return new UserDto
+        return new UserResponseDto
         {
             Id = user.Id,
             FullName = user.FullName,
             Email = user.Email,
             Role = user.Role,
-            Status = user.Status.ToString(),
+            Phone = user.Phone,
             FinesOutstanding = user.FinesOutstanding
         };
+    }
+
+    
+    public async Task<UserResponseDto> CreateAsync(CreateUserDto dto)
+    {
+        var user = new User
+        {
+            FullName = dto.FullName,
+            Email = dto.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            Role = dto.Role, // direct (no auth check now)
+            Phone = dto.Phone,
+            Address = dto.Address
+        };
+
+        var created = await _repository.AddAsync(user);
+
+        return new UserResponseDto
+        {
+            Id = created.Id,
+            FullName = created.FullName,
+            Email = created.Email,
+            Role = created.Role,
+            Phone = created.Phone,
+            FinesOutstanding = created.FinesOutstanding
+        };
+    }
+
+    
+    public async Task<UserResponseDto?> UpdateAsync(Guid id, UpdateUserDto dto)
+    {
+        var user = await _repository.GetByIdAsync(id);
+        if (user == null) return null;
+
+        user.FullName = dto.FullName;
+        user.Email = dto.Email;
+        user.Role = dto.Role;
+        user.Phone = dto.Phone;
+        user.Address = dto.Address;
+
+        var updated = await _repository.UpdateAsync(user);
+
+        return new UserResponseDto
+        {
+            Id = updated.Id,
+            FullName = updated.FullName,
+            Email = updated.Email,
+            Role = updated.Role,
+            Phone = updated.Phone,
+            FinesOutstanding = updated.FinesOutstanding
+        };
+    }
+
+    
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        return await _repository.DeleteAsync(id);
     }
 }

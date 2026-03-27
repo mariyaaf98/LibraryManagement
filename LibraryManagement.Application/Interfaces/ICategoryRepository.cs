@@ -3,13 +3,9 @@ using LibraryManagement.Domain.CategoryEntity;
 namespace LibraryManagement.Application.CategoryInterface;
 public interface ICategoryRepository
 {
-    Category CreateCategory(Category category);
-
-    List<Category> GetCategories();
-
-    Category? GetCategoryById(Guid id);
-
-    void UpdateCategory(Category category);
-
-    bool DeleteCategory(Guid id);
+    Task<List<Category>> GetAllAsync();
+    Task<Category?> GetByIdAsync(Guid id);
+    Task<Category> CreateAsync(Category category);
+    Task<bool> UpdateAsync(Category category);
+    Task<bool> DeleteAsync(Guid id);
 }

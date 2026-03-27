@@ -30,7 +30,6 @@ public class Book : BaseEntity
 
     public SubCategory? SubCategory { get; set; }
 
-
     public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
 
     public ICollection<BookCategory> BookCategories { get; set; } = new List<BookCategory>();

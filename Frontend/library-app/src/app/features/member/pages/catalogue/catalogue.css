@@ -1,0 +1,168 @@
+/* 🌙 MAIN */
+.dashboard {
+  background: #0b1220;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.title {
+  color: white;
+  margin-bottom: 20px;
+}
+
+/* 🔍 SEARCH */
+.search-box {
+  background: #0f172a;
+  padding: 15px;
+  border-radius: 16px;
+  border: 1px solid #1e293b;
+  margin-bottom: 20px;
+}
+
+.search-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.search-row input {
+  flex: 1;
+  background: #020617;
+  border: 1px solid #1e293b;
+  padding: 10px;
+  border-radius: 10px;
+  color: white;
+}
+
+.search-row input::placeholder {
+  color: #94a3b8;
+}
+
+.search-row select {
+  width: 200px;
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  color: white;
+}
+
+/* 🔘 FILTER */
+.filter-row button {
+  background: transparent;
+  border: 1px solid #1e293b;
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #94a3b8;
+  margin-right: 8px;
+  transition: 0.3s;
+}
+
+.filter-row button:hover {
+  background: #1e293b;
+  color: white;
+}
+
+.filter-row button.active {
+  background: #2563eb;
+  color: white;
+  border: none;
+}
+
+/* 📚 CARD */
+.book-card {
+  background: #0f172a;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #1e293b;
+  transition: 0.3s;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+}
+
+/* 🔹 TOP */
+.card-top {
+  height: 160px;
+  background: #1e293b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.book-img {
+  max-height: 120px;
+}
+
+/* 🟢 BADGE */
+.status-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.status-badge.available {
+  background: #064e3b;
+  color: #10b981;
+}
+
+.status-badge.low {
+  background: #78350f;
+  color: #f59e0b;
+}
+
+.status-badge.out {
+  background: #7f1d1d;
+  color: #ef4444;
+}
+
+/* 🔹 BODY */
+.card-body-custom {
+  padding: 15px;
+  color: white;
+}
+
+.card-body-custom h5 {
+  margin-bottom: 5px;
+}
+
+.author {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* DETAILS */
+.details {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.details span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.details p {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* CATEGORY */
+.category-pill {
+  margin-top: 15px;
+  background: #1e293b;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  font-size: 13px;
+}
+
+/* EMPTY */
+.empty {
+  color: white;
+}

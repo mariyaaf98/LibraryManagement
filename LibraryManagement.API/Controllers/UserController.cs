@@ -1,37 +1,33 @@
-using Microsoft.AspNetCore.Mvc;
-using LibraryManagement.Application.UserService;
-using LibraryManagement.Application.DTOs.User;
 
+using LibraryManagement.Application.DTOs.User;
+using LibraryManagement.Application.UserService;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagement.API.Controllers;
 
 [ApiController]
-[Route("api/user")]
+[Route("api/[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly UserService _userService;
+    private readonly UserService _service;
 
-    public UserController(UserService userService)
+    public UserController(UserService service)
     {
-        _userService = userService;
+        _service = service;
     }
 
-    // ── Get all users ───────────────────────────
+    
     [HttpGet]
-    public IActionResult GetUsers()
+    public async Task<IActionResult> GetAll()
     {
-        var users = _userService.GetUsers();
-        return Ok(users);
+        return Ok(await _service.GetAllAsync());
     }
 
-    // ── Get by Id ───────────────────────────────
+    
     [HttpGet("{id}")]
-    public IActionResult GetUserById(string id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        if (!Guid.TryParse(id, out Guid userId))
-            return BadRequest("Invalid user ID format");
-
-        var user = _userService.GetUserById(userId);
+        var user = await _service.GetByIdAsync(id);
 
         if (user == null)
             return NotFound("User not found");
@@ -39,62 +35,36 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
-    // ── Create ──────────────────────────────────
+    
     [HttpPost]
-    public IActionResult CreateUser([FromBody] CreateUserDto dto)
+    public async Task<IActionResult> Create(CreateUserDto dto)
     {
-        // BASIC VALIDATION (Controller level)
-        if (string.IsNullOrWhiteSpace(dto.FullName) ||
-            string.IsNullOrWhiteSpace(dto.Email) ||
-            string.IsNullOrWhiteSpace(dto.Password))
-        {
-            return BadRequest("Name, Email and Password are required");
-        }
+        var created = await _service.CreateAsync(dto);
 
-        try
-        {
-            var result = _userService.CreateUser(dto);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
-    // ── Update ──────────────────────────────────
+   
     [HttpPut("{id}")]
-    public IActionResult UpdateUser(string id, [FromBody] UpdateUserDto dto)
+    public async Task<IActionResult> Update(Guid id, UpdateUserDto dto)
     {
-        if (!Guid.TryParse(id, out Guid userId))
-            return BadRequest("Invalid user ID format");
+        var updated = await _service.UpdateAsync(id, dto);
 
-        if (string.IsNullOrWhiteSpace(dto.FullName) ||
-            string.IsNullOrWhiteSpace(dto.Email))
-        {
-            return BadRequest("Name and Email are required");
-        }
-
-        var updatedUser = _userService.UpdateUser(userId, dto);
-
-        if (updatedUser == null)
+        if (updated == null)
             return NotFound("User not found");
 
-        return Ok(updatedUser);
+        return Ok(updated);
     }
 
-    // ── Delete ──────────────────────────────────
+    
     [HttpDelete("{id}")]
-    public IActionResult DeleteUser(string id)
+    public async Task<IActionResult> Delete(Guid id)
     {
-        if (!Guid.TryParse(id, out Guid userId))
-            return BadRequest("Invalid user ID format");
-
-        var deleted = _userService.DeleteUser(userId);
+        var deleted = await _service.DeleteAsync(id);
 
         if (!deleted)
             return NotFound("User not found");
 
-        return Ok("User deleted successfully");
+        return NoContent();
     }
 }

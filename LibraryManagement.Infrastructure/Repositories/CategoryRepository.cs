@@ -1,6 +1,6 @@
-using LibraryManagement.Application.CategoryInterface;
 using LibraryManagement.Domain.CategoryEntity;
 using LibraryManagement.Infrastructure.Data;
+using LibraryManagement.Application.CategoryInterface;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Infrastructure.CategoryRepository;
@@ -14,61 +14,44 @@ public class CategoryRepository : ICategoryRepository
         _context = context;
     }
 
-    public Category CreateCategory(Category category)
+    public async Task<List<Category>> GetAllAsync()
+    {
+        return await _context.Categories.ToListAsync();
+    }
+
+    public async Task<Category?> GetByIdAsync(Guid id)
+    {
+        return await _context.Categories.FindAsync(id);
+    }
+
+    public async Task<Category> CreateAsync(Category category)
     {
         _context.Categories.Add(category);
-        _context.SaveChanges();
-
+        await _context.SaveChangesAsync();
         return category;
     }
 
-    public List<Category> GetCategories()
+    public async Task<bool> UpdateAsync(Category category)
     {
-        return _context.Categories
-            .Where(c => !c.IsDeleted)
-            .Include(c => c.SubCategories)
-            .ToList();
+        var existing = await _context.Categories.FindAsync(category.Id);
+
+        if (existing == null) return false;
+
+        existing.Name = category.Name;
+        existing.Description = category.Description;
+
+        await _context.SaveChangesAsync();
+        return true;
     }
 
-    public Category? GetCategoryById(Guid id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        return _context.Categories
-            .Where(c => !c.IsDeleted)
-            .Include(c => c.SubCategories)
-            .FirstOrDefault(c => c.Id == id);
-    }
+        var category = await _context.Categories.FindAsync(id);
 
-    public void UpdateCategory(Category category)
-    {
-        var existingCategory = _context.Categories
-            .FirstOrDefault(c => c.Id == category.Id && !c.IsDeleted);
+        if (category == null) return false;
 
-        if (existingCategory == null)
-        {
-            throw new Exception("Category not found");
-        }
-
-        existingCategory.Name = category.Name;
-        existingCategory.Description = category.Description;
-        existingCategory.UpdatedAt = DateTime.UtcNow;
-
-        _context.SaveChanges();
-    }
-
-    public bool DeleteCategory(Guid id)
-    {
-        var category = _context.Categories
-            .FirstOrDefault(c => c.Id == id && !c.IsDeleted);
-
-        if (category == null)
-        {
-            return false;
-        }
-
-        category.IsDeleted = true;
-
-        _context.SaveChanges();
-
+        _context.Categories.Remove(category);
+        await _context.SaveChangesAsync();
         return true;
     }
 }

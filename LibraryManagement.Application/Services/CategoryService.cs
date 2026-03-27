@@ -3,37 +3,41 @@ using LibraryManagement.Domain.CategoryEntity;
 
 namespace LibraryManagement.Application.CategoryService;
 
-public class CategoryService : ICategoryRepository
+public class CategoryService
 {
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly ICategoryRepository _repo;
 
-    public CategoryService(ICategoryRepository categoryRepository)
+    public CategoryService(ICategoryRepository repo)
     {
-        _categoryRepository = categoryRepository;
+        _repo = repo;
     }
 
-    public Category CreateCategory(Category category)
+    public async Task<List<Category>> GetAllAsync()
     {
-        return _categoryRepository.CreateCategory(category);
+        return await _repo.GetAllAsync();
     }
 
-    public List<Category> GetCategories()
+    public async Task<Category?> GetByIdAsync(Guid id)
     {
-        return _categoryRepository.GetCategories();
+        return await _repo.GetByIdAsync(id);
     }
 
-    public Category? GetCategoryById(Guid id)
+    public async Task<Category> CreateAsync(Category category)
     {
-        return _categoryRepository.GetCategoryById(id);
+        // 🔥 validation (important use of service)
+        if (string.IsNullOrWhiteSpace(category.Name))
+            throw new Exception("Category name is required");
+
+        return await _repo.CreateAsync(category);
     }
 
-    public void UpdateCategory(Category category)
+    public async Task<bool> UpdateAsync(Category category)
     {
-        _categoryRepository.UpdateCategory(category);
+        return await _repo.UpdateAsync(category);
     }
 
-    public bool DeleteCategory(Guid id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        return _categoryRepository.DeleteCategory(id);
+        return await _repo.DeleteAsync(id);
     }
 }

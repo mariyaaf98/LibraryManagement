@@ -6,7 +6,7 @@ using LibraryManagement.Application.AuthorRepository;
 namespace LibraryManagement.API.Controllers;
 
 [ApiController]
-[Route("api/author")]
+[Route("api/[controller]")]
 public class AuthorController : ControllerBase
 {
     private readonly IAuthorRepository _repository;

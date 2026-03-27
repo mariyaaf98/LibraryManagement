@@ -4,6 +4,9 @@ using LibraryManagement.Infrastructure.Data;
 
 namespace LibraryManagement.Infrastructure.Repositories;
 
+using Microsoft.EntityFrameworkCore;
+using LibraryManagement.Domain.UserEntity;
+
 public class UserRepository : IUserRepository
 {
     private readonly AppDbContext _context;
@@ -13,48 +16,42 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    // ── Get all users ───────────────────────────
-    public List<User> GetUsers()
+    public async Task<IEnumerable<User>> GetAllAsync()
     {
-        return _context.Users
+        return await _context.Users
             .Where(u => !u.IsDeleted)
-            .ToList();
+            .ToListAsync();
     }
 
-    // ── Get by Id ───────────────────────────────
-    public User? GetUserById(Guid id)
+    public async Task<User?> GetByIdAsync(Guid id)
     {
-        return _context.Users
-            .FirstOrDefault(u => u.Id == id && !u.IsDeleted);
+        return await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
     }
 
-    // ── Get by Email (NEW) ──────────────────────
-    public User? GetByEmail(string email)
+    public async Task<User> AddAsync(User user)
     {
-        return _context.Users
-            .FirstOrDefault(u => u.Email == email && !u.IsDeleted);
-    }
-
-    // ── Create ──────────────────────────────────
-    public User CreateUser(User user)
-    {
-        _context.Users.Add(user);
-        _context.SaveChanges();
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
         return user;
     }
 
-    // ── Update ──────────────────────────────────
-    public User UpdateUser(User user)
+    public async Task<User> UpdateAsync(User user)
     {
         _context.Users.Update(user);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return user;
     }
 
-    // ── Delete (Soft delete) ────────────────────
-    public void DeleteUser(User user)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        _context.Users.Update(user);
-        _context.SaveChanges();
+        var user = await _context.Users.FindAsync(id);
+        if (user == null) return false;
+
+        user.IsDeleted = true; // soft delete
+        await _context.SaveChangesAsync();
+
+        return true;
     }
+
 }

@@ -1,0 +1,128 @@
+<div class="container mt-4 dashboard">
+
+  <h2 class="title">Browse Catalogue</h2>
+
+  <!-- 🔍 SEARCH + GENRE -->
+  <div class="search-box">
+
+    <div class="search-row">
+
+      <input
+        type="text"
+        placeholder="Search by title, author or ISBN..."
+        [(ngModel)]="searchText"
+        (input)="onSearch()"
+      />
+
+      <select
+        [(ngModel)]="selectedGenre"
+        (change)="setGenre(selectedGenre)"
+      >
+        <option value="">All genres</option>
+
+        @for (g of genres; track g) {
+          <option [value]="g">{{ g }}</option>
+        }
+      </select>
+
+    </div>
+
+    <!-- 🔘 FILTER BUTTONS -->
+    <div class="filter-row">
+
+      <button [class.active]="selectedStatus === ''"
+              (click)="setStatus('')">All books</button>
+
+      <button [class.active]="selectedStatus === 'available'"
+              (click)="setStatus('available')">Available</button>
+
+      <button [class.active]="selectedStatus === 'low'"
+              (click)="setStatus('low')">Low stock</button>
+
+      <button [class.active]="selectedStatus === 'out'"
+              (click)="setStatus('out')">Out of stock</button>
+
+    </div>
+
+  </div>
+
+  <!-- 📚 BOOK CARDS -->
+  @if (filteredBooks.length > 0) {
+
+    <div class="row">
+
+      @for (book of filteredBooks; track book.id) {
+
+        <div class="col-md-4 mb-4">
+
+          <div class="book-card">
+
+            <!-- 🔹 TOP -->
+            <div class="card-top">
+
+              <span class="status-badge"
+                [ngClass]="{
+                  'available': book.totalCopies > 3,
+                  'low': book.totalCopies > 0 && book.totalCopies <= 3,
+                  'out': book.totalCopies === 0
+                }">
+
+                {{
+                  book.totalCopies === 0 ? 'OUT OF STOCK' :
+                  book.totalCopies <= 3 ? 'LOW STOCK' :
+                  'AVAILABLE'
+                }}
+
+              </span>
+
+              <img
+                [src]="book.coverImageUrl || 'assets/no-image.png'"
+                class="book-img"
+              />
+
+            </div>
+
+            <!-- 🔹 BODY -->
+            <div class="card-body-custom">
+
+              <h5>{{ book.title }}</h5>
+              <p class="author">{{ book.authors.join(', ') }}</p>
+
+              <div class="details">
+
+                <div>
+                  <span>ISBN</span>
+                  <p>{{ book.isbn }}</p>
+                </div>
+
+                <div>
+                  <span>Category</span>
+                  <p>{{ book.subCategoryName }}</p>
+                </div>
+
+                <div>
+                  <span>Copies</span>
+                  <p>{{ book.totalCopies }}/5</p>
+                </div>
+
+              </div>
+
+              <div class="category-pill">
+                📘 {{ book.subCategoryName }}
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      }
+
+    </div>
+
+  } @else {
+    <p class="empty">No books found</p>
+  }
+
+</div>

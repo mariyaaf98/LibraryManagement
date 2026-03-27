@@ -2,17 +2,14 @@ using LibraryManagement.Domain.UserEntity;
 
 namespace LibraryManagement.Application.UserInterface;
 
+using LibraryManagement.Domain.UserEntity;
+
 public interface IUserRepository
 {
-    List<User> GetUsers();
+    Task<IEnumerable<User>> GetAllAsync();
+    Task<User?> GetByIdAsync(Guid id);
+    Task<User> AddAsync(User user);
+    Task<User> UpdateAsync(User user);
+    Task<bool> DeleteAsync(Guid id);
 
-    User? GetUserById(Guid id);
-
-    User? GetByEmail(string email);
-
-    User CreateUser(User user);
-
-    User UpdateUser(User user);
-
-    void DeleteUser(User user); 
 }

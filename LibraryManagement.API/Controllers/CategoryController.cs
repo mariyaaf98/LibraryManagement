@@ -1,84 +1,78 @@
 using Microsoft.AspNetCore.Mvc;
 using LibraryManagement.Application.CategoryService;
 using LibraryManagement.Domain.CategoryEntity;
+using LibraryManagement.API.DTOs.Category;
 
 namespace LibraryManagement.API.Controllers;
 
 [ApiController]
-[Route("api/category")]
+[Route("api/[controller]")]
 public class CategoryController : ControllerBase
 {
-    private readonly CategoryService _categoryService;
+    private readonly CategoryService _service;
 
-    public CategoryController(CategoryService categoryService)
+    public CategoryController(CategoryService service)
     {
-        _categoryService = categoryService;
-    }
-
-    [HttpPost]
-    public IActionResult CreateCategory(Category category)
-    {
-        var result = _categoryService.CreateCategory(category);
-        return Ok(result);
+        _service = service;
     }
 
     [HttpGet]
-    public IActionResult GetCategories()
+    public async Task<IActionResult> GetAll()
     {
-        return Ok(_categoryService.GetCategories());
+        return Ok(await _service.GetAllAsync());
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetCategoryById(string id)
+    public async Task<IActionResult> Get(Guid id)
     {
-        if (!Guid.TryParse(id, out Guid categoryId))
+        var result = await _service.GetByIdAsync(id);
+
+        if (result == null)
+            return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateCategoryDto dto)
+    {
+        var category = new Category
         {
-            return BadRequest("Invalid Id format");
-        }
+            Name = dto.Name,
+            Description = dto.Description
+        };
 
-        var category = _categoryService.GetCategoryById(categoryId);
+        var result = await _service.CreateAsync(category);
 
-        if (category == null)
-        {
-            return NotFound("Category not found");
-        }
-
-        return Ok(category);
+        return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateCategory(string id, Category category)
+    public async Task<IActionResult> Update(Guid id, UpdateCategoryDto dto)
     {
-        if (!Guid.TryParse(id, out Guid categoryId))
+        var category = new Category
         {
-            return BadRequest("Invalid Id format");
-        }
+            Id = id,
+            Name = dto.Name,
+            Description = dto.Description
+        };
 
-        if (categoryId != category.Id)
-        {
-            return BadRequest("Category ID mismatch");
-        }
+        var updated = await _service.UpdateAsync(category);
 
-        _categoryService.UpdateCategory(category);
+        if (!updated)
+            return NotFound();
 
-        return Ok("Category updated successfully");
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteCategory(string id)
+    public async Task<IActionResult> Delete(Guid id)
     {
-        if (!Guid.TryParse(id, out Guid categoryId))
-        {
-            return BadRequest("Invalid Id format");
-        }
-
-        var deleted = _categoryService.DeleteCategory(categoryId);
+        var deleted = await _service.DeleteAsync(id);
 
         if (!deleted)
-        {
-            return NotFound("Category not found");
-        }
+            return NotFound();
 
-        return Ok("Category deleted successfully");
+        return NoContent();
     }
 }

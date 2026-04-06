@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { BookService } from '../../../../core/services/book';
 import { BookResponseDto } from '../../../../core/models/book-response.dto';
 import { NgClass } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-catalogue',
@@ -21,8 +22,9 @@ export class CatalogueComponent implements OnInit {
 
   constructor(
     private bookService: BookService,
-    private cdr: ChangeDetectorRef
-  ) { }
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadBooks();
@@ -56,4 +58,10 @@ export class CatalogueComponent implements OnInit {
     this.selectedGenre = genre;
     this.loadBooks();
   }
+
+
+  openBookDetails(id: string) {
+  this.router.navigate(['/member/book', id]);
+  
+}
 }

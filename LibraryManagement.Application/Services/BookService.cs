@@ -3,6 +3,7 @@ using LibraryManagement.Application.BookRepository;
 using LibraryManagement.Domain.BookAuthorEntity;
 using LibraryManagement.Domain.BookCategoryEntity;
 using LibraryManagement.Domain.BookEntity;
+using LibraryManagement.Domain.CopyEntity;
 
 public class BookService
 {
@@ -84,6 +85,21 @@ public class BookService
             {
                 CategoryId = cid
             }).ToList();
+
+        // ✅ DEFAULT COPY
+        book.Copies = new List<Copy>
+    {
+        new Copy
+        {
+            
+            Barcode = $"BC-{DateTime.UtcNow:yyyyMMddHHmmss}",
+            AcquisitionDate = DateTime.UtcNow,
+            Location = "Main Shelf",
+            Status = "AVAILABLE",
+            Condition = "NEW"
+        }
+    };
+
 
         await _repository.AddAsync(book);
     }

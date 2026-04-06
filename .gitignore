@@ -1,0 +1,14 @@
+Frontend/library-app/node_modules/
+Frontend/library-app/dist/
+Frontend/library-app/.angular/
+Frontend/library-app/.env
+
+**/bin/
+**/obj/
+
+.vscode/
+.idea/
+
+*.log
+.DS_Store
+Thumbs.db

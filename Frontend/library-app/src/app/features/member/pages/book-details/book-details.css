@@ -1,0 +1,230 @@
+/* =========================
+   ROOT COLOR SYSTEM
+========================= */
+:root {
+  --bg-main: #020617;
+  --bg-card: #0b1220;
+  --bg-hover: #0f172a;
+
+  --text-main: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --blue: #3b82f6;
+  --blue-light: #60a5fa;
+
+  --green: #22c55e;
+  --green-light: #4ade80;
+
+  --border: #1e293b;
+}
+
+/* =========================
+   PAGE BACKGROUND (FIXED)
+========================= */
+.book-detail-page {
+  padding: 30px;
+  background: radial-gradient(circle at top left, #0b1220, #020617);
+  color: var(--text-main);
+}
+
+/* =========================
+   LEFT COVER CARD (DEPTH)
+========================= */
+.book-cover-card {
+  background: #0b1220;
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid var(--border);
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.9),
+    0 0 20px rgba(59,130,246,0.15);
+}
+
+/* BOOK IMAGE */
+.book-cover-card img {
+  width: 100%;
+  max-width: 220px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 14px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+/* =========================
+   AVAILABILITY BADGE
+========================= */
+.availability {
+  margin-top: 15px;
+  background: rgba(34,197,94,0.15);
+  color: var(--green-light);
+  border: 1px solid rgba(34,197,94,0.3);
+
+  padding: 6px 14px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  margin-right: 6px;
+
+  box-shadow: 0 0 10px var(--green);
+}
+
+/* =========================
+   CATEGORY TAG
+========================= */
+.category {
+  background: rgba(59,130,246,0.15);
+  color: var(--blue-light);
+  border: 1px solid rgba(59,130,246,0.3);
+
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+/* =========================
+   TITLE & AUTHOR (FIXED)
+========================= */
+.title {
+  font-size: 38px;
+  font-weight: 700;
+  color: #ffffff; 
+}
+
+.author {
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+
+/* =========================
+   DIVIDER
+========================= */
+hr {
+  border-color: var(--border);
+  opacity: 0.5;
+  margin: 20px 0;
+}
+
+/* =========================
+   META GRID
+========================= */
+.meta label {
+  color: var(--text-muted);
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.meta p {
+  color: var(--text-main);
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+/* =========================
+   ACTION BUTTONS (VISIBLE NOW)
+========================= */
+.actions {
+  margin-top: 10px;
+}
+
+/* PRIMARY BUTTON */
+.custom-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border: none;
+  color: #ffffff !important;
+  border-radius: 10px;
+  padding: 10px 20px;
+
+  box-shadow: 0 0 15px rgba(59,130,246,0.4);
+  transition: 0.3s;
+}
+
+.custom-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* OUTLINE BUTTON */
+.custom-outline {
+  border: 1px solid #334155;
+   color: #e2e8f0 !important;;
+  background: transparent;
+  border-radius: 10px;
+  padding: 10px 20px;
+}
+
+.custom-outline:hover {
+  background: var(--bg-hover);
+}
+
+/* ICON BUTTONS */
+.icon-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-main);
+  border-radius: 10px;
+  padding: 8px 12px;
+  transition: 0.3s;
+}
+
+.icon-btn:hover {
+  background: var(--bg-hover);
+}
+
+/* =========================
+   TABS (VISIBLE FIX)
+========================= */
+.tabs {
+  display: flex;
+  gap: 30px;
+  margin-top: 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  color: var(--text-secondary);
+  padding-bottom: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.tab:hover {
+  color: var(--text-main);
+}
+
+.tab.active {
+  color: var(--blue-light);
+  border-bottom: 2px solid var(--blue);
+  font-weight: 500;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+
+  .book-cover-card img {
+    max-width: 160px;
+    height: 240px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .meta {
+    margin-top: 10px;
+  }
+}

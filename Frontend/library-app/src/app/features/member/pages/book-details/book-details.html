@@ -1,1 +1,107 @@
-<p>book-details works!</p>
+<div class="container book-detail-page">
+
+  <div class="row">
+
+    <!-- LEFT IMAGE -->
+    <div class="col-md-4 text-center">
+      <div class="book-cover-card">
+        <img [src]="book?.coverImageUrl" />
+      </div>
+
+      <div class="availability mt-3">
+        <span class="dot"></span>
+        Available
+      </div>
+    </div>
+
+    <!-- RIGHT CONTENT -->
+    <div class="col-md-8">
+
+      <!-- CATEGORY -->
+      <div class="category">Fantasy / Fiction</div>
+
+      <!-- TITLE -->
+      <h2 class="title">{{ book?.title }}</h2>
+
+      <!-- AUTHOR -->
+      <p class="author">by {{ book?.author }}</p>
+
+
+      <hr />
+
+      <!-- META GRID -->
+      <div class="row meta">
+
+        <div class="col-6">
+          <label>ISBN</label>
+          <p>{{ book?.isbn }}</p>
+        </div>
+
+        <div class="col-6">
+          <label>Publisher</label>
+          <p>{{ book?.publisher }}</p>
+        </div>
+
+        <div class="col-6">
+          <label>Edition</label>
+          <p>{{ book?.edition }}</p>
+        </div>
+
+        <div class="col-6">
+          <label>Pages</label>
+          <p>{{ book?.pages }}</p>
+        </div>
+
+        <div class="col-6">
+          <label>Language</label>
+          <p>{{ book?.language }}</p>
+        </div>
+
+        <div class="col-6">
+          <label>Available Now</label>
+          <p>{{ book?.availableCopies }} copies</p>
+        </div>
+
+      </div>
+
+      <hr />
+
+      <!-- ACTION BUTTONS -->
+      <div class="actions d-flex gap-3 flex-wrap">
+
+        <button class="btn btn-outline-secondary px-4">
+          Borrow Book ↗
+        </button>
+
+        <button class="btn btn-outline-secondary px-4">
+          Reserve
+        </button>
+
+
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+
+  <div 
+    class="tab"
+    [class.active]="activeTab === 'description'"
+    (click)="setTab('description')">
+    Description
+  </div>
+
+  <div 
+    class="tab"
+    [class.active]="activeTab === 'copies'"
+    (click)="setTab('copies')">
+    Copies & Location
+  </div>
+
+
+</div>
+
+</div>

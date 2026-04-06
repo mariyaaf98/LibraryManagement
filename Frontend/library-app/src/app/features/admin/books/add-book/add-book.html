@@ -1,0 +1,178 @@
+<div class="content">
+
+  <div class="card-dark form-container">
+
+    <h2 class="form-title">
+      {{ mode === 'edit' ? 'Edit Book' : 'Add Book' }}
+    </h2>
+
+    <form #bookForm="ngForm" (ngSubmit)="addBook(bookForm)">
+
+      <div class="form-grid">
+
+        <!-- TITLE -->
+        <div class="form-group">
+          <label>Title *</label>
+
+          <input 
+            type="text" 
+            name="title" 
+            [(ngModel)]="book.title" 
+            required 
+            minlength="2" 
+            maxlength="100"
+            #title="ngModel">
+
+          @if (title.invalid && title.touched) {
+            <div class="error">
+              @if (title.errors?.['required']) {
+                <span>Title is required</span>
+              }
+              @if (title.errors?.['minlength']) {
+                <span>Min 2 characters</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- ISBN -->
+        <div class="form-group">
+          <label>ISBN</label>
+
+          <input 
+            type="text" 
+            name="isbn" 
+            [(ngModel)]="book.isbn" 
+            pattern="^[0-9-]+$" 
+            #isbn="ngModel">
+
+          @if (isbn.invalid && isbn.touched) {
+            <div class="error">
+              @if (isbn.errors?.['pattern']) {
+                <span>Only numbers and hyphens allowed</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- YEAR -->
+        <div class="form-group">
+          <label>Published Year</label>
+
+          <input 
+            type="number" 
+            name="publishedYear" 
+            [(ngModel)]="book.publishedYear" 
+            min="1000" 
+            [max]="currentYear"
+            #year="ngModel">
+
+          @if (year.invalid && year.touched) {
+            <div class="error">Invalid year</div>
+          }
+        </div>
+
+        <!-- SUBCATEGORY -->
+        <div class="form-group">
+          <label>SubCategory *</label>
+
+          <select 
+            name="subCategoryId" 
+            [(ngModel)]="book.subCategoryId" 
+            required 
+            #subCat="ngModel">
+
+            <!-- ✅ FIXED -->
+            <option [ngValue]="null">Select SubCategory</option>
+
+            @for (sub of subCategories; track sub.id) {
+              <option [ngValue]="sub.id">{{ sub.name }}</option>
+            }
+          </select>
+
+          @if (subCat.invalid && subCat.touched) {
+            <div class="error">SubCategory required</div>
+          }
+        </div>
+
+        <!-- CATEGORY -->
+        <div class="form-group">
+          <label>Category *</label>
+
+          <select 
+            name="categoryIds" 
+            [(ngModel)]="book.categoryIds" 
+            multiple 
+            required 
+            #cat="ngModel">
+
+            @for (c of categories; track c.id) {
+              <option [ngValue]="c.id">{{ c.name }}</option>
+            }
+          </select>
+
+          @if (cat.invalid && cat.touched) {
+            <div class="error">Category required</div>
+          }
+        </div>
+
+        <!-- AUTHOR -->
+        <div class="form-group">
+          <label>Author *</label>
+
+          <select 
+            name="authorIds" 
+            [(ngModel)]="book.authorIds" 
+            multiple 
+            required 
+            #author="ngModel">
+
+            @for (a of authors; track a.id) {
+              <option [ngValue]="a.id">
+                {{ a.fullName }}
+              </option>
+            }
+          </select>
+
+          @if (author.invalid && author.touched) {
+            <div class="error">Author required</div>
+          }
+        </div>
+
+        <!-- IMAGE -->
+        <div class="form-group">
+          <label>Cover Image *</label>
+
+          <input type="file" (change)="onFileSelected($event)">
+
+          @if (fileError) {
+            <div class="error">{{ fileError }}</div>
+          }
+
+          <!-- ✅ SHOW EXISTING IMAGE IN EDIT -->
+          @if (mode === 'edit' && book.coverImageUrl) {
+            <img 
+              [src]="book.coverImageUrl" 
+              width="80" 
+              style="margin-top:10px; border-radius:6px;">
+          }
+        </div>
+
+      </div>
+
+      <!-- BUTTON -->
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn-blue" 
+          [disabled]="bookForm.invalid || isLoading">
+
+          {{ isLoading ? 'Saving...' : (mode === 'edit' ? 'Update Book' : 'Save Book') }}
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+
+</div>

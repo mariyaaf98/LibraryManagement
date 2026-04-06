@@ -1,0 +1,126 @@
+<div class="card-dark">
+
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">
+      {{ isEditMode ? 'Edit Copy' : 'Add Copy' }}
+    </h3>
+  </div>
+
+  <!-- FORM -->
+  <form #copyForm="ngForm" (ngSubmit)="save()">
+
+    <div class="row">
+
+      <!-- Barcode -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Barcode</label>
+        <input
+          type="text"
+          class="form-control"
+          name="barcode"
+          [(ngModel)]="copy.barcode"
+          placeholder="Enter barcode"
+          required
+          #barcode="ngModel"
+          [readonly]="isEditMode"
+        />
+
+        @if (barcode.invalid && barcode.touched) {
+          <small class="text-danger">Barcode is required</small>
+        }
+      </div>
+
+      <!-- Location -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Location</label>
+        <input
+          type="text"
+          class="form-control"
+          name="location"
+          [(ngModel)]="copy.location"
+          placeholder="Shelf A1"
+        />
+      </div>
+
+      <!-- Acquisition Date -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Acquisition Date</label>
+        <input
+          type="date"
+          class="form-control"
+          name="acquisitionDate"
+          [(ngModel)]="copy.acquisitionDate"
+        />
+      </div>
+
+      <!-- Status -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Status</label>
+
+        <select
+          class="form-control"
+          name="status"
+          [(ngModel)]="copy.status"
+          required
+          #status="ngModel"
+        >
+          <option value="">Select status</option>
+          <option value="AVAILABLE">AVAILABLE</option>
+          <option value="BORROWED">BORROWED</option>
+          <option value="LOST">LOST</option>
+          <option value="DAMAGED">DAMAGED</option>
+        </select>
+
+        @if (status.invalid && status.touched) {
+          <small class="text-danger">Status is required</small>
+        }
+      </div>
+
+      <!-- Condition -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Condition</label>
+
+        <select
+          class="form-control"
+          name="condition"
+          [(ngModel)]="copy.condition"
+          required
+          #condition="ngModel"
+        >
+          <option value="">Select condition</option>
+          <option value="NEW">NEW</option>
+          <option value="GOOD">GOOD</option>
+          <option value="FAIR">FAIR</option>
+          <option value="POOR">POOR</option>
+        </select>
+
+        @if (condition.invalid && condition.touched) {
+          <small class="text-danger">Condition is required</small>
+        }
+      </div>
+
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="d-flex justify-content-end gap-2 mt-3">
+
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        (click)="goBack()">
+        Cancel
+      </button>
+
+      <button
+        type="submit"
+        class="btn-blue"
+        [disabled]="copyForm.invalid">
+        {{ isEditMode ? 'Update Copy' : 'Save Copy' }}
+      </button>
+
+    </div>
+
+  </form>
+
+</div>

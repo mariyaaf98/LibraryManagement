@@ -1,6 +1,7 @@
 using LibraryManagement.Domain.UserEntity;
 using LibraryManagement.Application.UserInterface;
 using LibraryManagement.Application.DTOs.User;
+using LibraryManagement.Domain.Enums;
 
 namespace LibraryManagement.Application.UserService;
 
@@ -26,7 +27,8 @@ public class UserService
             Email = u.Email,
             Role = u.Role,
             Phone = u.Phone,
-            FinesOutstanding = u.FinesOutstanding
+            FinesOutstanding = u.FinesOutstanding,
+            Status = u.Status.ToString()
         });
     }
 
@@ -43,7 +45,8 @@ public class UserService
             Email = user.Email,
             Role = user.Role,
             Phone = user.Phone,
-            FinesOutstanding = user.FinesOutstanding
+            FinesOutstanding = user.FinesOutstanding,
+            Status = user.Status.ToString() 
         };
     }
 
@@ -69,7 +72,8 @@ public class UserService
             Email = created.Email,
             Role = created.Role,
             Phone = created.Phone,
-            FinesOutstanding = created.FinesOutstanding
+            FinesOutstanding = created.FinesOutstanding,
+            Status = created.Status.ToString()
         };
     }
 
@@ -94,7 +98,8 @@ public class UserService
             Email = updated.Email,
             Role = updated.Role,
             Phone = updated.Phone,
-            FinesOutstanding = updated.FinesOutstanding
+            FinesOutstanding = updated.FinesOutstanding,
+            Status = updated.Status.ToString() 
         };
     }
 
@@ -103,4 +108,19 @@ public class UserService
     {
         return await _repository.DeleteAsync(id);
     }
+
+
+    public async Task<bool> ToggleBlockAsync(Guid id)
+{
+    var user = await _repository.GetByIdAsync(id);
+    if (user == null) return false;
+
+    user.Status = user.Status == UserStatus.Blocked
+        ? UserStatus.Active
+        : UserStatus.Blocked;
+
+    await _repository.UpdateAsync(user);
+
+    return true;
+}
 }

@@ -8,4 +8,5 @@ public class UserResponseDto
     public string Role { get; set; } = string.Empty;
     public string? Phone { get; set; }
     public decimal FinesOutstanding { get; set; }
+   public string Status { get; set; } = string.Empty;
 }

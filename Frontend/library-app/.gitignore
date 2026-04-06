@@ -1,44 +1,42 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# =========================
+# Angular (Frontend)
+# =========================
+Frontend/library-app/node_modules/
+Frontend/library-app/dist/
+Frontend/library-app/.angular/
+Frontend/library-app/.env
 
-# Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+# =========================
+# .NET (Backend)
+# =========================
+**/bin/
+**/obj/
 
-# Node
-/node_modules
-npm-debug.log
-yarn-error.log
+# =========================
+# Logs
+# =========================
+npm-debug.log*
+yarn-error.log*
+*.log
 
+# =========================
 # IDEs and editors
+# =========================
+.vscode/
 .idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+*.suo
+*.user
+*.cache
+.history/
 
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/mcp.json
-.history/*
-
+# =========================
 # Miscellaneous
-/.angular/cache
+# =========================
 .sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
-__screenshots__/
+coverage/
 
+# =========================
 # System files
+# =========================
 .DS_Store
 Thumbs.db

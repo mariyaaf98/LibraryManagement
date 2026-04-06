@@ -1,35 +1,358 @@
+/* =========================
+   ROOT DESIGN SYSTEM
+========================= */
 :root {
-  --bg-main: #020617;    
-  --bg-card: #0f172a;     
-  --border-color: #1e293b;
+  --bg-main: #020617;
+  --bg-card: #0b1220;
+  --bg-hover: #0f172a;
+
   --text-main: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --blue: #3b82f6;
+  --blue-light: #60a5fa;
+
+  --green: #22c55e;
+  --green-light: #4ade80;
+
+  --red: #ef4444;
+
+  --border-color: #1e293b;
 }
+
+/* =========================
+   RESET
+========================= */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+/* =========================
+   LAYOUT
+========================= */
 .layout {
   display: flex;
   min-height: 100vh;
 }
 
 app-sidebar {
-  display: block;
   width: 240px;
-  flex-shrink: 0;
+  background: #020617;
+  border-right: 1px solid var(--border-color);
 }
 
-
- .main {
+.main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #020617;  
-} 
-
- .content {
-  flex: 1;
-  padding: 20px;
-  background: #020617;   
-} 
-.app-sidebar {
-  display: block;
-  height: 100vh;  
 }
 
+.content {
+  flex: 1;
+  padding: 20px;
+  background: radial-gradient(circle at top left, #0b1220, #020617);
+}
+
+/* =========================
+   CARD
+========================= */
+.card-dark {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.8),
+    0 0 10px rgba(59,130,246,0.1);
+}
+
+/* =========================
+   🔥 BOOTSTRAP TABLE OVERRIDE (CRITICAL)
+========================= */
+.table {
+  --bs-table-bg: transparent !important;
+  --bs-table-striped-bg: transparent !important;
+  --bs-table-hover-bg: rgba(59,130,246,0.08) !important;
+
+  color: var(--text-main) !important;
+  background: transparent !important;
+  margin-bottom: 0;
+}
+
+/* REMOVE ALL WHITE CELLS */
+.table > :not(caption) > * > * {
+  background-color: transparent !important;
+  color: var(--text-main) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* HEADER */
+.table thead {
+  background: var(--bg-hover) !important;
+}
+
+.table thead th {
+  color: var(--text-secondary) !important;
+  padding: 14px;
+}
+
+/* BODY */
+.table tbody tr {
+  background: transparent !important;
+  transition: 0.2s;
+}
+
+.table tbody td {
+  padding: 14px;
+}
+
+/* HOVER */
+.table tbody tr:hover {
+  background: rgba(59,130,246,0.08) !important;
+}
+
+/* REMOVE STRIPES */
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background: transparent !important;
+}
+
+/* RESPONSIVE */
+.table-responsive {
+  background: transparent !important;
+}
+
+/* =========================
+   IMAGE
+========================= */
+.book-img {
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.btn-blue {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.btn-blue:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(59,130,246,0.4);
+}
+
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.btn-icon.edit {
+  color: var(--blue);
+}
+
+.btn-icon.edit:hover {
+  background: rgba(59,130,246,0.1);
+  border-color: var(--blue);
+}
+
+.btn-icon.delete {
+  color: var(--red);
+}
+
+.btn-icon.delete:hover {
+  background: rgba(239,68,68,0.1);
+  border-color: var(--red);
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+/* =========================
+   BADGES
+========================= */
+.badge-success {
+  background: rgba(34,197,94,0.15);
+  color: var(--green-light);
+  border: 1px solid rgba(34,197,94,0.3);
+  padding: 6px 14px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.badge-success::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.badge-danger {
+  background: rgba(239,68,68,0.15);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,0.3);
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+/* =========================
+   TEXT
+========================= */
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* =========================
+   INPUT
+========================= */
+input, select {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+
+.form-container {
+  max-width: 900px;
+  margin: auto;
+}
+
+.form-title {
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+/* GRID */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* FULL WIDTH */
+.form-group.full {
+  grid-column: span 2;
+}
+
+/* GROUP */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* =========================
+   CUSTOM DROPDOWN
+========================= */
+.custom-dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+/* SELECT BOX (visible area) */
+.dropdown-selected {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 10px;
+  border-radius: 8px;
+  color: var(--text-main);
+}
+
+/* DROPDOWN MENU */
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px;
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* EACH ITEM */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: var(--bg-hover);
+}
+
+/* ERROR TEXT */
+.error {
+  color: #ef4444;   /* red */
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* INPUT ERROR BORDER */
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border: 1px solid #ef4444;
+  outline: none;
+}
+
+/* OPTIONAL: VALID STYLE */
+input.ng-valid.ng-touched,
+select.ng-valid.ng-touched {
+  border: 1px solid #22c55e;
+}

@@ -1,4 +1,6 @@
-/* 🌙 MAIN */
+/* =========================
+   🌙 MAIN
+========================= */
 .dashboard {
   background: #0b1220;
   padding: 20px;
@@ -10,7 +12,9 @@
   margin-bottom: 20px;
 }
 
-/* 🔍 SEARCH */
+/* =========================
+   🔍 SEARCH
+========================= */
 .search-box {
   background: #0f172a;
   padding: 15px;
@@ -46,56 +50,97 @@
   color: white;
 }
 
-/* 🔘 FILTER */
-.filter-row button {
-  background: transparent;
-  border: 1px solid #1e293b;
-  padding: 6px 14px;
-  border-radius: 20px;
-  color: #94a3b8;
-  margin-right: 8px;
-  transition: 0.3s;
+/* =========================
+   🔘 FILTER (FIXED VERSION)
+========================= */
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.filter-row button:hover {
+/* CUSTOM BUTTON (NO BOOTSTRAP CONFLICT) */
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 16px;
+  border-radius: 999px;
+
+  border: 1px solid #1e293b;
+  background: transparent;
+
+  color: #cbd5f1;
+  font-size: 14px;
+  font-weight: 500;
+
+  white-space: nowrap;
+  line-height: 1;
+
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.filter-btn:hover {
   background: #1e293b;
   color: white;
 }
 
-.filter-row button.active {
+.filter-btn.active {
   background: #2563eb;
   color: white;
   border: none;
 }
 
-/* 📚 CARD */
+/* =========================
+   📚 CARD
+========================= */
 .book-card {
   background: #0f172a;
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid #1e293b;
   transition: 0.3s;
+  cursor: pointer;
+
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .book-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
 }
 
-/* 🔹 TOP */
+/* =========================
+   🔥 IMAGE SECTION
+========================= */
 .card-top {
-  height: 160px;
-  background: #1e293b;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: relative;
+  overflow: hidden;
+  background: #1e293b;
+  height: 220px;
 }
 
+/* IMAGE FULL COVER */
 .book-img {
-  max-height: 120px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
 }
 
-/* 🟢 BADGE */
+/* HOVER ZOOM */
+.book-card:hover .book-img {
+  transform: scale(1.08);
+}
+
+/* =========================
+   🟢 BADGE
+========================= */
 .status-badge {
   position: absolute;
   top: 10px;
@@ -103,6 +148,8 @@
   padding: 5px 12px;
   border-radius: 20px;
   font-size: 12px;
+  z-index: 2;
+  font-weight: 500;
 }
 
 .status-badge.available {
@@ -120,26 +167,33 @@
   color: #ef4444;
 }
 
-/* 🔹 BODY */
+/* =========================
+   🔹 BODY
+========================= */
 .card-body-custom {
-  padding: 15px;
+  padding: 12px;
   color: white;
+  flex: 1;
 }
 
 .card-body-custom h5 {
-  margin-bottom: 5px;
+  font-size: 15px;
+  margin-bottom: 6px;
 }
 
 .author {
   color: #94a3b8;
-  font-size: 14px;
+  font-size: 13px;
+  margin-bottom: 6px;
 }
 
-/* DETAILS */
+/* =========================
+   DETAILS
+========================= */
 .details {
   display: flex;
   justify-content: space-between;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 .details span {
@@ -149,20 +203,26 @@
 
 .details p {
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
 }
 
-/* CATEGORY */
+/* =========================
+   CATEGORY
+========================= */
 .category-pill {
-  margin-top: 15px;
+  margin-top: 12px;
   background: #1e293b;
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: 20px;
   display: inline-block;
-  font-size: 13px;
+  font-size: 12px;
 }
 
-/* EMPTY */
+/* =========================
+   EMPTY STATE
+========================= */
 .empty {
   color: white;
+  text-align: center;
+  margin-top: 20px;
 }

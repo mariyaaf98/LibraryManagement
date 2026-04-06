@@ -1,0 +1,99 @@
+<div class="content">
+
+  <div class="card-dark">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="mb-0">Users</h3>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-responsive">
+
+      <table class="table">
+
+        <!-- HEADER -->
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Phone</th>
+            <th>Fines</th>
+            <th>Status</th>
+            <th class="text-center">Action</th>
+          </tr>
+        </thead>
+
+        <!-- BODY -->
+        <tbody>
+
+          @if (users.length === 0) {
+            <tr>
+              <td colspan="7" class="text-center text-muted">
+                No users found
+              </td>
+            </tr>
+          }
+
+          @for (user of users; track user.id) {
+
+            <tr>
+
+              <!-- NAME -->
+              <td>{{ user.fullName }}</td>
+
+              <!-- EMAIL -->
+              <td>{{ user.email }}</td>
+
+              <!-- ROLE -->
+              <td>
+                <span class="text-secondary">
+                  {{ user.role }}
+                </span>
+              </td>
+
+              <!-- PHONE -->
+              <td>{{ user.phone || '-' }}</td>
+
+              <!-- FINES -->
+              <td>
+                ₹ {{ user.finesOutstanding }}
+              </td>
+
+              <!-- STATUS -->
+              <td>
+                <span
+                  [class.badge-success]="user.status === 'Active'"
+                  [class.badge-danger]="user.status === 'Blocked'">
+
+                  {{ user.status }}
+                </span>
+              </td>
+
+              <!-- ACTION -->
+              <td class="text-center">
+
+                <button
+                  class="btn-blue"
+                  (click)="toggleBlock(user)">
+
+                  {{ user.status === 'Blocked' ? 'Unblock' : 'Block' }}
+
+                </button>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>

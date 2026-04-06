@@ -1,0 +1,106 @@
+<div class="card-dark">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Book Copies</h3>
+
+        <button class="btn-blue" (click)="goToAddCopy()">
+            + Add Copy
+        </button>
+    </div>
+
+    <!-- 🔥 TOTAL COPIES -->
+    <div class="d-flex gap-3 mb-3">
+
+        <div class="stat-box">
+            <span class="stat-label">Total Copies</span>
+            <span class="stat-value">
+                {{ copies.length }}
+            </span>
+        </div>
+
+        <div class="stat-box">
+            <span class="stat-label">Available</span>
+            <span class="stat-value text-success">
+                {{ getAvailableCount() }}
+            </span>
+        </div>
+
+        <div class="stat-box">
+            <span class="stat-label">Checked Out</span>
+            <span class="stat-value text-danger">
+                {{ getCheckedOutCount() }}
+            </span>
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-responsive">
+        <table class="table align-middle">
+
+            <thead>
+                <tr>
+                    <th>Barcode</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Condition</th>
+                    <th>Acquired</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @for (copy of copies; track $index) {
+                <tr>
+
+                    <td class="fw-semibold">
+                        {{ copy.barcode }}
+                    </td>
+
+                    <td class="text-secondary">
+                        {{ copy.location || '—' }}
+                    </td>
+
+                    <td>
+                        <span [ngClass]="{
+                'badge-success': copy.status === 'AVAILABLE',
+                'badge-danger': copy.status !== 'AVAILABLE'
+              }">
+                            {{ copy.status }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="badge bg-primary-subtle text-primary">
+                            {{ copy.condition }}
+                        </span>
+                    </td>
+
+                    <td class="text-muted">
+                        {{ copy.acquisitionDate | date:'mediumDate' }}
+                    </td>
+
+
+                    <td class="text-center">
+                        <div class="action-buttons">
+
+                            <button class="btn-icon edit" (click)="editCopy(copy.id)">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+
+                            <button class="btn-icon delete" (click)="deleteCopy(copy.id)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+
+                        </div>
+                    </td>
+
+                </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+
+</div>

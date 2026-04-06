@@ -16,14 +16,14 @@ public class UserController : ControllerBase
         _service = service;
     }
 
-    
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         return Ok(await _service.GetAllAsync());
     }
 
-    
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
@@ -35,7 +35,7 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
-    
+
     [HttpPost]
     public async Task<IActionResult> Create(CreateUserDto dto)
     {
@@ -44,7 +44,7 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
-   
+
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateUserDto dto)
     {
@@ -56,13 +56,25 @@ public class UserController : ControllerBase
         return Ok(updated);
     }
 
-    
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var deleted = await _service.DeleteAsync(id);
 
         if (!deleted)
+            return NotFound("User not found");
+
+        return NoContent();
+    }
+
+
+    [HttpPatch("{id}/toggle-block")]
+    public async Task<IActionResult> ToggleBlock(Guid id)
+    {
+        var result = await _service.ToggleBlockAsync(id);
+
+        if (!result)
             return NotFound("User not found");
 
         return NoContent();

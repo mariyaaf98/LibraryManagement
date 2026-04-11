@@ -47,7 +47,7 @@ export class AddBookComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef   // ✅ added
-  ) {}
+  ) { }
 
   ngOnInit(): void {
 
@@ -78,7 +78,7 @@ export class AddBookComponent implements OnInit {
 
           if (callback) callback();
 
-          this.cdr.detectChanges(); // 🔥 update UI
+          this.cdr.detectChanges();
         });
 
       });
@@ -89,13 +89,35 @@ export class AddBookComponent implements OnInit {
   loadBook(id: string) {
     this.bookService.getBookById(id).subscribe(res => {
 
+
+      const authorIds = this.authors
+        .filter(a => res.authors.some(r => r.id === a.id))
+        .map(a => a.id);
+
+      const categoryIds = this.categories
+        .filter(c => res.categories.includes(c.name))
+        .map(c => c.id);
+
+      const subCategoryId = this.subCategories.find(
+        s => s.name === res.subCategory?.name
+      )?.id || '';
+
       this.book = {
-        ...res,
-        authorIds: res.authorIds || [],
-        categoryIds: res.categoryIds || []
+        title: res.title,
+        subtitle: '',
+        isbn: res.isbn || '',
+        edition: '',
+        publishedYear: res.publishedYear ?? null,
+        language: res.language || '',
+        summary: res.summary || '',
+        coverImageUrl: res.coverImageUrl || '',
+
+        subCategoryId,
+        authorIds,
+        categoryIds
       };
 
-      this.cdr.detectChanges(); // 🔥 ensure form updates
+      this.cdr.detectChanges();
     });
   }
 

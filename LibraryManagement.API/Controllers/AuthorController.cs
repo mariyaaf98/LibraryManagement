@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using LibraryManagement.API.DTOs.Author;
 using LibraryManagement.Domain.AuthorEntity;
 using LibraryManagement.Application.AuthorRepository;
+using LibraryManagement.API.DTOs.Book;
+
 
 namespace LibraryManagement.API.Controllers;
 
@@ -16,7 +18,7 @@ public class AuthorController : ControllerBase
         _repository = repository;
     }
 
-    
+
     [HttpGet]
     public async Task<IActionResult> GetAuthors()
     {
@@ -32,7 +34,7 @@ public class AuthorController : ControllerBase
         return Ok(result);
     }
 
-    
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAuthorById(Guid id)
     {
@@ -51,7 +53,7 @@ public class AuthorController : ControllerBase
         return Ok(result);
     }
 
-    
+
     [HttpPost]
     public async Task<IActionResult> CreateAuthor([FromBody] CreateAuthorDto dto)
     {
@@ -78,7 +80,7 @@ public class AuthorController : ControllerBase
         return Ok(result);
     }
 
-   
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateAuthor(Guid id, [FromBody] UpdateAuthorDto dto)
     {
@@ -106,7 +108,7 @@ public class AuthorController : ControllerBase
         return NoContent();
     }
 
-    
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAuthor(Guid id)
     {
@@ -121,5 +123,18 @@ public class AuthorController : ControllerBase
         await _repository.UpdateAsync(author);
 
         return NoContent();
+    }
+
+    [HttpGet("author/{authorId}")]
+    public async Task<IEnumerable<BookResponseDto>> GetBooksByAuthorAsync(Guid authorId)
+    {
+        var books = await _repository.GetBooksByAuthorAsync(authorId);
+
+        return books.Select(b => new BookResponseDto
+        {
+            Id = b.Id,
+            Title = b.Title,
+            CoverImageUrl = b.CoverImageUrl
+        });
     }
 }

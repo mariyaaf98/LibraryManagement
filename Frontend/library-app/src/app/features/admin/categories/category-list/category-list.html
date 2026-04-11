@@ -1,0 +1,108 @@
+<div class="card-dark">
+
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Category List</h3>
+
+    <button class="btn-blue" (click)="goToAddCategory()">
+      <i class="bi bi-plus-lg"></i>
+      Add Category
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  @if (isLoading) {
+    <p class="text-muted">Loading...</p>
+  } @else {
+
+    <div class="table-responsive">
+      <table class="table">
+
+        <!-- HEADER -->
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Sub Categories</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <!-- BODY -->
+        <tbody>
+
+          <!-- EMPTY -->
+          @if (categories.length === 0) {
+            <tr>
+              <td colspan="5" class="text-center text-muted">
+                No Categories Found
+              </td>
+            </tr>
+          } @else {
+
+            @for (c of categories; track c.id; let i = $index) {
+              <tr>
+
+                <!-- INDEX -->
+                <td>{{ i + 1 }}</td>
+
+                <!-- NAME -->
+                <td>
+                  <strong>{{ c.name }}</strong>
+                </td>
+
+                <!-- DESCRIPTION -->
+                <td class="text-secondary">
+                  {{ c.description || '—' }}
+                </td>
+
+                <!-- SUBCATEGORY -->
+                <td>
+                  @if (getSubCategories(c.id).length > 0) {
+
+                    <div>
+                      @for (s of getSubCategories(c.id); track s.id) {
+                        <span class="badge-success sub-item">
+                          {{ s.name }}
+                        </span>
+                      }
+                    </div>
+
+                  } @else {
+                    <span class="text-muted">No SubCategory</span>
+                  }
+                </td>
+
+                <!-- ACTIONS -->
+                <td>
+                  <div class="action-buttons">
+
+                    <!-- EDIT -->
+                    <button class="btn-icon edit"
+                            (click)="editCategory(c.id)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+
+                    <!-- DELETE -->
+                    <button class="btn-icon delete"
+                            (click)="confirmDelete(c.id)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+
+                  </div>
+                </td>
+
+              </tr>
+            }
+
+          }
+
+        </tbody>
+
+      </table>
+    </div>
+
+  }
+
+</div>

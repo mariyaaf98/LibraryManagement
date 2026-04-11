@@ -15,17 +15,8 @@
         <a routerLink="/member"
            routerLinkActive="active"
            class="nav-link">
-          <i class="bi bi-house-door"></i>
-          Overview
-        </a>
-      </li>
-
-      <li class="nav-item">
-        <a routerLink="/member/catalogue"
-           routerLinkActive="active"
-           class="nav-link">
           <i class="bi bi-book"></i>
-          Catalogue
+          Books
         </a>
       </li>
 
@@ -33,6 +24,15 @@
 
     <!-- ADMIN -->
     @if (role === 'admin') {
+
+       <li class="nav-item">
+        <a routerLink="/admin"
+           routerLinkActive="active"
+           class="nav-link">
+           <i class="bi bi-house-door"></i>
+          Dashboard
+        </a>
+      </li>
 
       <li class="nav-item">
         <a routerLink="/admin/users"
@@ -51,6 +51,24 @@
           Book List
         </a>
       </li>
+
+      <li class="nav-item">
+        <a routerLink="/admin/authors"
+           routerLinkActive="active"
+           class="nav-link">
+          <i class="bi bi-person"></i>
+          Authors
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/admin/category"
+           routerLinkActive="active"
+           class="nav-link">
+          <i class="bi bi-folder2-open"></i>
+          Category
+        </a>
+      </li>
+     
 
     }
 

@@ -4,6 +4,7 @@ export interface UserResponseDto {
   email: string;
   role: string;
   phone?: string;
+  address?: string;   
   finesOutstanding: number;
   status: string;
 }

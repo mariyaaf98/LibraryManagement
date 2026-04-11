@@ -1,0 +1,66 @@
+<div class="author-page">
+
+  @if (author) {
+    <div class="author-card">
+
+      <!-- Avatar -->
+      <div class="avatar">
+        {{ author.fullName.charAt(0) }}
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+
+        <h1 class="title">{{ author.fullName }}</h1>
+
+        @if (author.birthDate) {
+          <p class="meta">
+            📅 Born: {{ author.birthDate | date:'longDate' }}
+          </p>
+        }
+
+        <div class="divider"></div>
+
+        <p class="description">
+          This author is part of your library system.
+        </p>
+
+      </div>
+
+    </div>
+  }
+
+</div>
+
+<!-- =========================
+     BOOKS SECTION
+========================= -->
+<div class="books-section">
+
+  <h2 class="section-title">Books by this author</h2>
+
+  @if (books.length > 0) {
+
+    <div class="books-grid">
+
+      @for (book of books; track book.id) {
+        <div class="book-card" (click)="goToBook(book.id)">
+
+          <!-- Book Image -->
+          <img [src]="book.coverImageUrl || 'assets/no-image.png'" />
+
+          <!-- Info -->
+          <div class="book-info">
+            <p class="book-title">{{ book.title }}</p>
+          </div>
+
+        </div>
+      }
+
+    </div>
+
+  } @else {
+    <p class="empty">No books found</p>
+  }
+
+</div>

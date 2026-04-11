@@ -1,6 +1,7 @@
 using LibraryManagement.Domain.AuthorEntity;
 using LibraryManagement.Application.AuthorRepository;
 using LibraryManagement.API.DTOs.Author;
+using LibraryManagement.API.DTOs.Book;
 
 namespace LibraryManagement.Application.AuthorService;
 
@@ -108,5 +109,17 @@ public class AuthorService
         await _authorRepository.UpdateAsync(author);
 
         return true;
+    }
+
+     public async Task<IEnumerable<BookResponseDto>> GetBooksByAuthorAsync(Guid authorId)
+    {
+        var books = await _authorRepository.GetBooksByAuthorAsync(authorId);
+
+        return books.Select(b => new BookResponseDto
+        {
+            Id = b.Id,
+            Title = b.Title,
+            CoverImageUrl = b.CoverImageUrl
+        });
     }
 }

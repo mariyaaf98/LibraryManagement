@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Domain.AuthorEntity;
 using LibraryManagement.Application.AuthorRepository;
 using LibraryManagement.Infrastructure.Data;
+using LibraryManagement.Domain.BookEntity;
 
 namespace LibraryManagement.Infrastructure.Repositories;
 
@@ -40,5 +41,15 @@ public class AuthorRepository : IAuthorRepository
     {
         _context.Entry(author).State = EntityState.Modified;
         await _context.SaveChangesAsync();
+    }
+
+
+    public async Task<IEnumerable<Book>> GetBooksByAuthorAsync(Guid authorId)
+    {
+        return await _context.BookAuthors
+            .Where(ba => ba.AuthorId == authorId)
+            .Select(ba => ba.Book!)
+            .Where(b => !b.IsDeleted)
+            .ToListAsync();
     }
 }

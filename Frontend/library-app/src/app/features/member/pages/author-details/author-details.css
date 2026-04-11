@@ -1,0 +1,179 @@
+/* =========================
+   AUTHOR PAGE (CENTERED + CLEAN)
+========================= */
+.author-page {
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+/* =========================
+   AUTHOR CARD (PREMIUM STYLE)
+========================= */
+.author-card {
+  width: 100%;
+  max-width: 900px;
+
+  display: flex;
+  align-items: center;
+  gap: 30px;
+
+  background: linear-gradient(145deg, #0b1220, #020617);
+  border-radius: 20px;
+  padding: 30px;
+
+  border: 1px solid rgba(59,130,246,0.2);
+
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.9),
+    0 0 30px rgba(59,130,246,0.15);
+
+  transition: 0.3s;
+}
+
+.author-card:hover {
+  transform: translateY(-6px) scale(1.01);
+}
+
+/* =========================
+   AVATAR (MORE PREMIUM)
+========================= */
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 36px;
+  font-weight: bold;
+
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+
+  box-shadow:
+    0 0 30px rgba(59,130,246,0.6),
+    inset 0 0 10px rgba(255,255,255,0.2);
+}
+
+/* =========================
+   CONTENT
+========================= */
+.content {
+  flex: 1;
+}
+
+.content .title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.meta {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.description {
+  margin-top: 15px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* =========================
+   DIVIDER (SOFT GLOW LINE)
+========================= */
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #334155, transparent);
+  margin: 15px 0;
+}
+
+/* =========================
+   BOOKS SECTION (FIX SPACING)
+========================= */
+.books-section {
+  margin-top: 60px;
+  padding: 0 40px;
+}
+
+.section-title {
+  font-size: 26px;
+  margin-bottom: 25px;
+  color: #ffffff;
+}
+
+/* =========================
+   GRID (FIX EMPTY SPACE)
+========================= */
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 25px;
+}
+
+/* =========================
+   BOOK CARD (UPGRADED)
+========================= */
+.book-card {
+  background: linear-gradient(145deg, #0b1220, #020617);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+
+  transition: 0.3s;
+  cursor: pointer;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+.book-card:hover {
+  transform: translateY(-8px) scale(1.03);
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.9),
+    0 0 20px rgba(59,130,246,0.3);
+}
+
+/* IMAGE */
+.book-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+
+/* INFO */
+.book-info {
+  padding: 12px;
+}
+
+.book-title {
+  font-size: 14px;
+  color: var(--text-main);
+  line-height: 1.4;
+}
+
+/* =========================
+   EMPTY TEXT
+========================= */
+.empty {
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .author-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .books-section {
+    padding: 0 20px;
+  }
+}

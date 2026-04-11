@@ -12,12 +12,6 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('./features/member/pages/overview/overview')
-            .then(m => m.OverviewComponent)
-      },
-      {
-        path: 'catalogue',
-        loadComponent: () =>
           import('./features/member/pages/catalogue/catalogue')
             .then(m => m.CatalogueComponent)
       },
@@ -26,14 +20,29 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/member/pages/book-details/book-details')
             .then(m => m.BookDetailsComponent)
+      },
+
+      {
+        path: 'authors/:id',
+        loadComponent: () =>
+          import('./features/member/pages/author-details/author-details')
+            .then(m => m.AuthorDetailsComponent)
       }
     ]
   },
 
   {
+
     path: 'admin',
     component: AdminLayoutComponent,
     children: [
+
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/admin/dashboard/dashboard')
+            .then(m => m.AdminDashboardComponent)
+      },
       {
         path: 'add-book',
         loadComponent: () =>
@@ -75,8 +84,58 @@ export const routes: Routes = [
       {
         path: 'users',
         loadComponent: () =>
-          import('./features/admin/users/user-list/user-list')
+          import('./features/admin/users/user/user-list/user-list')
             .then(m => m.UserListComponent)
+      },
+      {
+        path: 'users/create',
+        loadComponent: () =>
+          import('./features/admin/users/user/add-user/add-user')
+            .then(m => m.UserFormComponent)
+      },
+
+      {
+        path: 'users/edit/:id',
+        loadComponent: () =>
+          import('./features/admin/users/user/add-user/add-user')
+            .then(m => m.UserFormComponent)
+      },
+
+      {
+        path: 'authors',
+        loadComponent: () =>
+          import('./features/admin/users/authors/author-list/author-list')
+            .then(m => m.AuthorListComponent)
+      },
+      {
+        path: 'authors/create',
+        loadComponent: () =>
+          import('./features/admin/users/authors/add-author/add-author')
+            .then(m => m.AuthorFormComponent)
+      },
+      {
+        path: 'authors/edit/:id',
+        loadComponent: () =>
+          import('./features/admin/users/authors/add-author/add-author')
+            .then(m => m.AuthorFormComponent)
+      },
+      {
+        path: 'category',
+        loadComponent: () =>
+          import('./features/admin/categories/category-list/category-list')
+            .then(m => m.CategoryListComponent)
+      },
+      {
+        path: 'category/create',
+        loadComponent: () =>
+          import('./features/admin/categories/add-category/add-category')
+            .then(m => m.CategoryFormComponent)
+      },
+      {
+        path: 'category/edit/:id',
+        loadComponent: () =>
+          import('./features/admin/categories/add-category/add-category')
+            .then(m => m.CategoryFormComponent)
       }
     ]
   },

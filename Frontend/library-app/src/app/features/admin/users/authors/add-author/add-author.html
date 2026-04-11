@@ -1,0 +1,69 @@
+<div class="content">
+
+  <div class="card-dark form-container">
+
+    <h2 class="form-title">
+      {{ mode === 'edit' ? 'Edit Author' : 'Add Author' }}
+    </h2>
+
+    <form #authorForm="ngForm" (ngSubmit)="submit(authorForm)">
+
+      <div class="form-grid">
+
+        <!-- GIVEN NAME -->
+        <div class="form-group">
+          <label>Given Name *</label>
+          <input type="text"
+                 name="givenName"
+                 [(ngModel)]="author.givenName"
+                 required
+                 #g="ngModel">
+
+          @if (g.invalid && g.touched) {
+            <div class="error">Required</div>
+          }
+        </div>
+
+        <!-- FAMILY NAME -->
+        <div class="form-group">
+          <label>Family Name *</label>
+          <input type="text"
+                 name="familyName"
+                 [(ngModel)]="author.familyName"
+                 required
+                 #f="ngModel">
+
+          @if (f.invalid && f.touched) {
+            <div class="error">Required</div>
+          }
+        </div>
+
+        <!-- BIRTH DATE -->
+        <div class="form-group">
+          <label>Birth Date</label>
+          <input type="date"
+                 name="birthDate"
+                 [(ngModel)]="author.birthDate">
+        </div>
+
+        <!-- BIOGRAPHY -->
+        <div class="form-group full">
+          <label>Biography</label>
+          <textarea name="biography"
+                    [(ngModel)]="author.biography"></textarea>
+        </div>
+
+      </div>
+
+      <!-- BUTTON -->
+      <button class="btn-blue"
+              type="submit"
+              [disabled]="authorForm.invalid">
+        {{ mode === 'edit' ? 'Update Author' : 'Save Author' }}
+      </button>
+
+    </form>
+
+  </div>
+
+</div>

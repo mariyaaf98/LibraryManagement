@@ -12,19 +12,28 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
+  // GET ALL USERS
   getUsers(): Observable<UserResponseDto[]> {
     return this.http.get<UserResponseDto[]>(this.apiUrl);
   }
 
-  createUser(data: CreateUserDto) {
+  // GET USER BY ID (IMPORTANT FOR EDIT)
+  getUserById(id: string): Observable<UserResponseDto> {
+    return this.http.get<UserResponseDto>(`${this.apiUrl}/${id}`);
+  }
+
+  // CREATE USER
+  createUser(data: CreateUserDto): Observable<any> {
     return this.http.post(this.apiUrl, data);
   }
 
-  updateUser(id: string, data: UpdateUserDto) {
+  // UPDATE USER
+  updateUser(id: string, data: UpdateUserDto): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, data);
   }
 
-  toggleBlock(id: string) {
+  // BLOCK / UNBLOCK
+  toggleBlock(id: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/toggle-block`, {});
   }
 }

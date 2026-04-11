@@ -28,15 +28,21 @@ public class BookRepository : IBookRepository
 
 
     public async Task<Book?> GetByIdAsync(Guid id)
-    {
-        return await _context.Books
-            .Include(b => b.SubCategory)
-            .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
-            .Include(b => b.BookCategories)
-                .ThenInclude(bc => bc.Category)
-            .FirstOrDefaultAsync(b => b.Id == id && !b.IsDeleted);
-    }
+{
+    return await _context.Books
+        .Where(b => !b.IsDeleted)
+        .Include(b => b.SubCategory)
+
+        .Include(b => b.Copies)
+
+        .Include(b => b.BookAuthors)
+            .ThenInclude(ba => ba.Author)
+
+        .Include(b => b.BookCategories)
+            .ThenInclude(bc => bc.Category)
+
+        .FirstOrDefaultAsync(b => b.Id == id);
+}
 
     public async Task AddAsync(Book book)
     {

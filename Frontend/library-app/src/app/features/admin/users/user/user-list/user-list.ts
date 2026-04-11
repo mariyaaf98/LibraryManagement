@@ -1,7 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { UserResponseDto } from '../../../../core/models/user-response.dto';
-import { UserService } from '../../../../core/services/user.service';
+import { UserResponseDto } from '../../../../../core/models/user-response.dto';
+import { UserService } from '../../../../../core/services/user.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'user-list',
@@ -18,7 +19,8 @@ export class UserListComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private cdr: ChangeDetectorRef   
+    private cdr: ChangeDetectorRef,
+    private router: Router   
   ) {}
 
   ngOnInit(): void {
@@ -33,30 +35,22 @@ export class UserListComponent implements OnInit {
       next: (res: UserResponseDto[]) => {
         this.users = res;
         this.loading = false;
-
-        this.cdr.detectChanges();   
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error(err);
         this.errorMessage = 'Failed to load users';
         this.loading = false;
-
-        this.cdr.detectChanges();   
+        this.cdr.detectChanges();
       }
     });
   }
 
   toggleBlock(user: UserResponseDto): void {
-
     this.userService.toggleBlock(user.id).subscribe({
       next: () => {
-
-        user.status =
-          user.status === 'Blocked'
-            ? 'Active'
-            : 'Blocked';
-
-        this.cdr.detectChanges();   
+        user.status = user.status === 'Blocked' ? 'Active' : 'Blocked';
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error(err);
@@ -65,4 +59,7 @@ export class UserListComponent implements OnInit {
     });
   }
 
+  addUser() {
+    this.router.navigate(['/admin/users/create']); 
+  }
 }

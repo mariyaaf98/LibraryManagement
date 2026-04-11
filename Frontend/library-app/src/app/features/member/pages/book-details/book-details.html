@@ -1,83 +1,112 @@
 <div class="container book-detail-page">
 
+  <!-- LOADING -->
+  @if (isLoading) {
+  <div class="text-center mt-5">
+    <p>Loading book details...</p>
+  </div>
+  }
+
+  <!-- ERROR -->
+  @if (errorMessage) {
+  <div class="text-center mt-5 text-danger">
+    <p>{{ errorMessage }}</p>
+  </div>
+  }
+
+  <!-- MAIN -->
+  @if (book) {
+
   <div class="row">
 
-    <!-- LEFT IMAGE -->
+    <!-- LEFT -->
     <div class="col-md-4 text-center">
+
       <div class="book-cover-card">
-        <img [src]="book?.coverImageUrl" />
+        <img [src]="book.coverImageUrl || 'assets/no-image.png'" />
       </div>
 
-      <div class="availability mt-3">
+      <div class="availability mt-3" [class.available]="book.totalCopies > 0"
+        [class.not-available]="book.totalCopies === 0">
+
         <span class="dot"></span>
-        Available
+        {{ book.totalCopies > 0 ? 'Available' : 'Not Available' }}
       </div>
+
     </div>
 
-    <!-- RIGHT CONTENT -->
+    <!-- RIGHT -->
     <div class="col-md-8">
 
       <!-- CATEGORY -->
-      <div class="category">Fantasy / Fiction</div>
+      <div class="category">
+        {{ book?.subCategory?.name || '' }}
+
+        @if (book.categories.length > 0) {
+        /
+        @for (cat of book.categories; track $index; let last = $last) {
+        {{ cat }}@if (!last) {, }
+        }
+        }
+      </div>
 
       <!-- TITLE -->
-      <h2 class="title">{{ book?.title }}</h2>
+      <h2 class="title">{{ book.title }}</h2>
 
-      <!-- AUTHOR -->
-      <p class="author">by {{ book?.author }}</p>
-
+      <!-- AUTHORS -->
+      <p class="author">
+        by
+        @if (book.authors.length > 0) {
+        @for (a of book.authors; track a.id; let last = $last) {
+        <span class="author-link" (click)="goToAuthorDetails(a.id)">
+          {{ a.fullName }}
+        </span>
+        @if (!last) {, }
+        }
+        } @else {
+        Unknown Author
+        }
+      </p>
 
       <hr />
 
-      <!-- META GRID -->
+      <!-- META -->
       <div class="row meta">
 
         <div class="col-6">
           <label>ISBN</label>
-          <p>{{ book?.isbn }}</p>
-        </div>
-
-        <div class="col-6">
-          <label>Publisher</label>
-          <p>{{ book?.publisher }}</p>
-        </div>
-
-        <div class="col-6">
-          <label>Edition</label>
-          <p>{{ book?.edition }}</p>
-        </div>
-
-        <div class="col-6">
-          <label>Pages</label>
-          <p>{{ book?.pages }}</p>
+          <p>{{ book.isbn || 'N/A' }}</p>
         </div>
 
         <div class="col-6">
           <label>Language</label>
-          <p>{{ book?.language }}</p>
+          <p>{{ book.language || 'N/A' }}</p>
         </div>
 
         <div class="col-6">
-          <label>Available Now</label>
-          <p>{{ book?.availableCopies }} copies</p>
+          <label>Published Year</label>
+          <p>{{ book.publishedYear || 'N/A' }}</p>
+        </div>
+
+        <div class="col-6">
+          <label>Total Copies</label>
+          <p>{{ book.totalCopies }}</p>
         </div>
 
       </div>
 
       <hr />
 
-      <!-- ACTION BUTTONS -->
+      <!-- ACTIONS -->
       <div class="actions d-flex gap-3 flex-wrap">
 
-        <button class="btn btn-outline-secondary px-4">
-          Borrow Book ↗
+        <button class="custom-btn" (click)="borrowBook()" [disabled]="book.totalCopies === 0">
+          Borrow Book
         </button>
 
-        <button class="btn btn-outline-secondary px-4">
-          Reserve
+        <button class="custom-outline" (click)="goBack()">
+          Back
         </button>
-
-
 
       </div>
 
@@ -86,22 +115,57 @@
 
   <!-- TABS -->
   <div class="tabs">
+    <div class="tab" [class.active]="activeTab === 'description'" (click)="setTab('description')">
+      Description
+    </div>
 
-  <div 
-    class="tab"
-    [class.active]="activeTab === 'description'"
-    (click)="setTab('description')">
-    Description
+    <div class="tab" [class.active]="activeTab === 'copies'" (click)="setTab('copies')">
+      Copies & Location
+    </div>
   </div>
 
-  <div 
-    class="tab"
-    [class.active]="activeTab === 'copies'"
-    (click)="setTab('copies')">
-    Copies & Location
+  <!-- CONTENT -->
+  <div class="tab-content mt-3">
+
+    <!-- DESCRIPTION -->
+    @if (activeTab === 'description') {
+    <div class="description">
+      <p>{{ book.summary || 'No description available' }}</p>
+    </div>
+    }
+
+    <!-- COPIES -->
+    @if (activeTab === 'copies') {
+    <div class="copies">
+
+      @if (book.copies.length > 0) {
+
+      @for (copy of book.copies; track copy.id) {
+      <div class="copy-card p-3 mb-2">
+
+        <p><strong>Barcode:</strong> {{ copy.barcode }}</p>
+
+        <p>
+          <strong>Status:</strong>
+          <span [class.text-success]="copy.status === 'AVAILABLE'" [class.text-danger]="copy.status !== 'AVAILABLE'">
+            {{ copy.status }}
+          </span>
+        </p>
+
+        <p><strong>Location:</strong> {{ copy.location || 'N/A' }}</p>
+
+      </div>
+      }
+
+      } @else {
+      <p>No copies available</p>
+      }
+
+    </div>
+    }
+
   </div>
 
-
-</div>
+  }
 
 </div>

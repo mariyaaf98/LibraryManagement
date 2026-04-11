@@ -6,6 +6,9 @@ import { inject, Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class LookupService {
+  createAuthor(arg0: { fullName: string; }) {
+    throw new Error('Method not implemented.');
+  }
 
   private http = inject(HttpClient);
 

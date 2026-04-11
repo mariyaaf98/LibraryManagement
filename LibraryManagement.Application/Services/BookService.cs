@@ -1,4 +1,6 @@
+using LibraryManagement.API.DTOs.Author;
 using LibraryManagement.API.DTOs.Book;
+using LibraryManagement.API.DTOs.Copy;
 using LibraryManagement.Application.BookRepository;
 using LibraryManagement.Domain.BookAuthorEntity;
 using LibraryManagement.Domain.BookCategoryEntity;
@@ -28,10 +30,18 @@ public class BookService
             CoverImageUrl = b.CoverImageUrl,
 
             SubCategoryName = b.SubCategory!.Name,
-            Authors = b.BookAuthors.Select(a => a.Author!.FullName).ToList(),
+            Authors = b.BookAuthors
+    .Select(a => new AuthorResponseDto
+    {
+        Id = a.Author!.Id,
+        FullName = a.Author.FullName,
+        BirthDate = a.Author.BirthDate
+    })
+    .ToList(),
             Categories = b.BookCategories.Select(c => c.Category!.Name).ToList()
         });
     }
+
 
     public async Task<BookResponseDto?> GetByIdAsync(Guid id)
     {
@@ -45,22 +55,51 @@ public class BookService
             Title = b.Title,
             Isbn = b.Isbn,
             PublishedYear = b.PublishedYear,
-
             CoverImageUrl = b.CoverImageUrl,
 
             SubCategoryName = b.SubCategory!.Name,
+
             Authors = b.BookAuthors
-                .Select(a => a.Author!.FullName)
-                .ToList(),
+        .Select(a => new AuthorResponseDto
+        {
+            Id = a.Author!.Id,
+            FullName = a.Author.FullName,
+            BirthDate = a.Author.BirthDate
+        })
+        .ToList(),
+
             Categories = b.BookCategories
                 .Select(c => c.Category!.Name)
-                .ToList()
+                .ToList(),
+
+            Language = b.Language,
+            Summary = b.Summary,
+
+            
+            Copies = b.Copies.Select(c => new CopyResponseDto
+            {
+                Id = c.Id,
+                BookId = c.BookId,
+                Barcode = c.Barcode,
+                AcquisitionDate = c.AcquisitionDate,
+                Location = c.Location,
+                Status = c.Status,
+                Condition = c.Condition,
+                Notes = c.Notes
+            }).ToList(),
+
+            TotalCopies = b.Copies.Count(),
+
+            AvailableCopies = b.Copies.Count(c => c.Status == "AVAILABLE")
         };
     }
+
+
     public async Task AddAsync(CreateBookDto dto)
     {
         var book = new Book
         {
+            Id = Guid.NewGuid(),
             Title = dto.Title,
             Subtitle = dto.Subtitle,
             Isbn = dto.Isbn,
@@ -76,6 +115,7 @@ public class BookService
         book.BookAuthors = dto.AuthorIds
             .Select(aid => new BookAuthor
             {
+                BookId = book.Id,
                 AuthorId = aid
             }).ToList();
 
@@ -86,19 +126,6 @@ public class BookService
                 CategoryId = cid
             }).ToList();
 
-        // ✅ DEFAULT COPY
-        book.Copies = new List<Copy>
-    {
-        new Copy
-        {
-            
-            Barcode = $"BC-{DateTime.UtcNow:yyyyMMddHHmmss}",
-            AcquisitionDate = DateTime.UtcNow,
-            Location = "Main Shelf",
-            Status = "AVAILABLE",
-            Condition = "NEW"
-        }
-    };
 
 
         await _repository.AddAsync(book);
@@ -125,7 +152,11 @@ public class BookService
 
         // Re-add
         book.BookAuthors = dto.AuthorIds
-            .Select(aid => new BookAuthor { AuthorId = aid })
+            .Select(aid => new BookAuthor
+            {
+                BookId = book.Id,
+                AuthorId = aid
+            })
             .ToList();
 
         book.BookCategories = dto.CategoryIds
@@ -164,7 +195,14 @@ public class BookService
             TotalCopies = b.Copies.Count(),
 
             SubCategoryName = b.SubCategory!.Name,
-            Authors = b.BookAuthors.Select(a => a.Author!.FullName).ToList(),
+            Authors = b.BookAuthors
+    .Select(a => new AuthorResponseDto
+    {
+        Id = a.Author!.Id,
+        FullName = a.Author.FullName,
+        BirthDate = a.Author.BirthDate
+    })
+    .ToList(),
             Categories = b.BookCategories.Select(c => c.Category!.Name).ToList()
         });
     }

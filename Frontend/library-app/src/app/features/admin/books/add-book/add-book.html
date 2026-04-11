@@ -14,24 +14,18 @@
         <div class="form-group">
           <label>Title *</label>
 
-          <input 
-            type="text" 
-            name="title" 
-            [(ngModel)]="book.title" 
-            required 
-            minlength="2" 
-            maxlength="100"
+          <input type="text" name="title" [(ngModel)]="book.title" required minlength="2" maxlength="100"
             #title="ngModel">
 
           @if (title.invalid && title.touched) {
-            <div class="error">
-              @if (title.errors?.['required']) {
-                <span>Title is required</span>
-              }
-              @if (title.errors?.['minlength']) {
-                <span>Min 2 characters</span>
-              }
-            </div>
+          <div class="error">
+            @if (title.errors?.['required']) {
+            <span>Title is required</span>
+            }
+            @if (title.errors?.['minlength']) {
+            <span>Min 2 characters</span>
+            }
+          </div>
           }
         </div>
 
@@ -39,19 +33,14 @@
         <div class="form-group">
           <label>ISBN</label>
 
-          <input 
-            type="text" 
-            name="isbn" 
-            [(ngModel)]="book.isbn" 
-            pattern="^[0-9-]+$" 
-            #isbn="ngModel">
+          <input type="text" name="isbn" [(ngModel)]="book.isbn" pattern="^[0-9-]+$" #isbn="ngModel">
 
           @if (isbn.invalid && isbn.touched) {
-            <div class="error">
-              @if (isbn.errors?.['pattern']) {
-                <span>Only numbers and hyphens allowed</span>
-              }
-            </div>
+          <div class="error">
+            @if (isbn.errors?.['pattern']) {
+            <span>Only numbers and hyphens allowed</span>
+            }
+          </div>
           }
         </div>
 
@@ -59,16 +48,11 @@
         <div class="form-group">
           <label>Published Year</label>
 
-          <input 
-            type="number" 
-            name="publishedYear" 
-            [(ngModel)]="book.publishedYear" 
-            min="1000" 
-            [max]="currentYear"
+          <input type="number" name="publishedYear" [(ngModel)]="book.publishedYear" min="1000" [max]="currentYear"
             #year="ngModel">
 
           @if (year.invalid && year.touched) {
-            <div class="error">Invalid year</div>
+          <div class="error">Invalid year</div>
           }
         </div>
 
@@ -76,22 +60,18 @@
         <div class="form-group">
           <label>SubCategory *</label>
 
-          <select 
-            name="subCategoryId" 
-            [(ngModel)]="book.subCategoryId" 
-            required 
-            #subCat="ngModel">
+          <select name="subCategoryId" [(ngModel)]="book.subCategoryId" required #subCat="ngModel">
 
             <!-- ✅ FIXED -->
             <option [ngValue]="null">Select SubCategory</option>
 
             @for (sub of subCategories; track sub.id) {
-              <option [ngValue]="sub.id">{{ sub.name }}</option>
+            <option [ngValue]="sub.id">{{ sub.name }}</option>
             }
           </select>
 
           @if (subCat.invalid && subCat.touched) {
-            <div class="error">SubCategory required</div>
+          <div class="error">SubCategory required</div>
           }
         </div>
 
@@ -99,20 +79,15 @@
         <div class="form-group">
           <label>Category *</label>
 
-          <select 
-            name="categoryIds" 
-            [(ngModel)]="book.categoryIds" 
-            multiple 
-            required 
-            #cat="ngModel">
+          <select name="categoryIds" [(ngModel)]="book.categoryIds" multiple required #cat="ngModel">
 
             @for (c of categories; track c.id) {
-              <option [ngValue]="c.id">{{ c.name }}</option>
+            <option [ngValue]="c.id">{{ c.name }}</option>
             }
           </select>
 
           @if (cat.invalid && cat.touched) {
-            <div class="error">Category required</div>
+          <div class="error">Category required</div>
           }
         </div>
 
@@ -120,22 +95,58 @@
         <div class="form-group">
           <label>Author *</label>
 
-          <select 
-            name="authorIds" 
-            [(ngModel)]="book.authorIds" 
-            multiple 
-            required 
-            #author="ngModel">
+          <select name="authorIds" [(ngModel)]="book.authorIds" multiple required #author="ngModel">
 
             @for (a of authors; track a.id) {
-              <option [ngValue]="a.id">
-                {{ a.fullName }}
-              </option>
+            <option [ngValue]="a.id">
+              {{ a.fullName }}
+            </option>
             }
           </select>
 
           @if (author.invalid && author.touched) {
-            <div class="error">Author required</div>
+          <div class="error">Author required</div>
+          }
+        </div>
+
+
+        <!-- LANGUAGE -->
+        <div class="form-group">
+          <label>Language *</label>
+
+          <select name="language" [(ngModel)]="book.language" required #language="ngModel">
+
+            <option [ngValue]="''">Select Language</option>
+
+            <option value="English">English</option>
+            <option value="Malayalam">Malayalam</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Tamil">Tamil</option>
+            <option value="French">French</option>
+          </select>
+
+          @if (language.invalid && language.touched) {
+          <div class="error">Language is required</div>
+          }
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="form-group full-width">
+          <label>Summary</label>
+
+          <textarea name="summary" [(ngModel)]="book.summary" minlength="10" maxlength="1000" rows="4"
+            placeholder="Enter a short description about the book..." #summary="ngModel">
+  </textarea>
+
+          @if (summary.invalid && summary.touched) {
+          <div class="error">
+            @if (summary.errors?.['required']) {
+            <span>Summary is required</span>
+            }
+            @if (summary.errors?.['minlength']) {
+            <span>Minimum 10 characters required</span>
+            }
+          </div>
           }
         </div>
 
@@ -146,15 +157,12 @@
           <input type="file" (change)="onFileSelected($event)">
 
           @if (fileError) {
-            <div class="error">{{ fileError }}</div>
+          <div class="error">{{ fileError }}</div>
           }
 
           <!-- ✅ SHOW EXISTING IMAGE IN EDIT -->
           @if (mode === 'edit' && book.coverImageUrl) {
-            <img 
-              [src]="book.coverImageUrl" 
-              width="80" 
-              style="margin-top:10px; border-radius:6px;">
+          <img [src]="book.coverImageUrl" width="80" style="margin-top:10px; border-radius:6px;">
           }
         </div>
 
@@ -162,10 +170,7 @@
 
       <!-- BUTTON -->
       <div class="form-actions">
-        <button 
-          type="submit" 
-          class="btn-blue" 
-          [disabled]="bookForm.invalid || isLoading">
+        <button type="submit" class="btn-blue" [disabled]="bookForm.invalid || isLoading">
 
           {{ isLoading ? 'Saving...' : (mode === 'edit' ? 'Update Book' : 'Save Book') }}
         </button>

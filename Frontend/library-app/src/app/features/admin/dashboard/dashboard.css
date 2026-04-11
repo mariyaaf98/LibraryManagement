@@ -1,0 +1,84 @@
+/* PAGE */
+.dashboard {
+  padding: 24px;
+  background: #0f172a; 
+  min-height: 100vh;
+  color: #e2e8f0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* TITLE */
+.dashboard h2 {
+  margin-bottom: 24px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* GRID */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+/* CARD */
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  transition: 0.3s;
+  border: 1px solid #334155;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  border-color: #6366f1;
+}
+
+/* ICON */
+.card div {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+/* VALUE */
+.card h3 {
+  font-size: 28px;
+  margin: 0;
+  color: #6366f1;
+}
+
+/* TITLE TEXT */
+.card p {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+/* SECTION */
+.section {
+  margin-top: 40px;
+}
+
+/* ACTIVITY CARD */
+.activity-card {
+  background: #1e293b;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #334155;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* TEXT */
+.activity-card p {
+  margin: 0;
+}
+
+/* TIME */
+.activity-card span {
+  font-size: 12px;
+  color: #94a3b8;
+}

@@ -1,0 +1,35 @@
+<div class="dashboard">
+
+  <h2>Admin Dashboard</h2>
+
+  <!--STATS -->
+  <div class="stats-grid">
+    @for (s of stats; track s.title) {
+      <div class="card">
+        <div>{{ s.icon }}</div>
+        <h3>{{ s.value }}</h3>
+        <p>{{ s.title }}</p>
+      </div>
+    }
+  </div>
+
+  <!--ACTIVITY -->
+  <div class="section">
+    <h3>Recent Activity</h3>
+
+    @if (activities.length > 0) {
+
+      @for (a of activities; track a.text) {
+        <div class="activity-card">
+          <p>{{ a.text }}</p>
+          <span>{{ a.time }}</span>
+        </div>
+      }
+
+    } @else {
+      <p>No activity found</p>
+    }
+
+  </div>
+
+</div>

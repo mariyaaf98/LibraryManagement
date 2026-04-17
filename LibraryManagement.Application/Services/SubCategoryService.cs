@@ -1,7 +1,7 @@
-
 using LibraryManagement.Domain.SubCategoryEntity;
 using LibraryManagement.Application.CategoryInterface;
 using LibraryManagement.API.DTOs.SubCategory;
+using LibraryManagement.Application.Exceptions;
 
 namespace LibraryManagement.Application.SubCategoryService;
 
@@ -18,7 +18,7 @@ public class SubCategoryService
         _categoryRepo = categoryRepo;
     }
 
-    // ── Get All ─────────────────────────────────
+    // GET ALL
     public async Task<List<SubCategoryResponseDto>> GetAllAsync()
     {
         var data = await _repo.GetAllAsync();
@@ -33,12 +33,13 @@ public class SubCategoryService
         }).ToList();
     }
 
-    // ── Get By Id ───────────────────────────────
-    public async Task<SubCategoryResponseDto?> GetByIdAsync(Guid id)
+    // GET BY ID
+    public async Task<SubCategoryResponseDto> GetByIdAsync(Guid id)
     {
         var x = await _repo.GetByIdAsync(id);
 
-        if (x == null) return null;
+        if (x == null)
+            throw new NotFoundException("SubCategory not found");
 
         return new SubCategoryResponseDto
         {
@@ -50,14 +51,16 @@ public class SubCategoryService
         };
     }
 
-    // ── Create ──────────────────────────────────
+    // CREATE
     public async Task<SubCategoryResponseDto> CreateAsync(CreateSubCategoryDto dto)
     {
-        // 🔥 Validate Category exists
+        if (string.IsNullOrWhiteSpace(dto.Name))
+            throw new ArgumentException("Name is required");
+
         var category = await _categoryRepo.GetByIdAsync(dto.CategoryId);
 
         if (category == null)
-            throw new InvalidOperationException("Category not found");
+            throw new NotFoundException("Category not found");
 
         var subCategory = new SubCategory
         {
@@ -78,24 +81,28 @@ public class SubCategoryService
         };
     }
 
-    // ── Update ──────────────────────────────────
-    public async Task<bool> UpdateAsync(Guid id, UpdateSubCategoryDto dto)
+    // UPDATE
+    public async Task UpdateAsync(Guid id, UpdateSubCategoryDto dto)
     {
         var existing = await _repo.GetByIdAsync(id);
 
-        if (existing == null) return false;
+        if (existing == null)
+            throw new NotFoundException("SubCategory not found");
 
         existing.Name = dto.Name;
         existing.Description = dto.Description;
 
         await _repo.UpdateAsync(existing);
-
-        return true;
     }
 
-    // ── Delete ──────────────────────────────────
-    public async Task<bool> DeleteAsync(Guid id)
+    // DELETE
+    public async Task DeleteAsync(Guid id)
     {
-        return await _repo.DeleteAsync(id);
+        var existing = await _repo.GetByIdAsync(id);
+
+        if (existing == null)
+            throw new NotFoundException("SubCategory not found");
+
+        await _repo.DeleteAsync(id);
     }
 }

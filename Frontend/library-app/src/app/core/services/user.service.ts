@@ -10,7 +10,7 @@ export class UserService {
 
   private apiUrl = 'http://localhost:5223/api/User';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // GET ALL USERS
   getUsers(): Observable<UserResponseDto[]> {
@@ -36,4 +36,17 @@ export class UserService {
   toggleBlock(id: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/toggle-block`, {});
   }
-}
+
+  //GET CURRENT USER PROFILE
+  getCurrentUser(email: string) {
+    return this.http.get<UserResponseDto>(
+      `${this.apiUrl}/profile?email=${email}`
+    );
+  }
+
+  
+  changePassword(data: any) {
+    return this.http.post(`${this.apiUrl}/change-password`, data);
+  }
+
+} 

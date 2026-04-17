@@ -2,9 +2,9 @@ using LibraryManagement.Domain.UserEntity;
 using LibraryManagement.Application.UserInterface;
 using LibraryManagement.Application.DTOs.User;
 using LibraryManagement.Domain.Enums;
+using LibraryManagement.Application.Exceptions;
 
 namespace LibraryManagement.Application.UserService;
-
 
 public class UserService
 {
@@ -15,7 +15,7 @@ public class UserService
         _repository = repository;
     }
 
-    
+    // GET ALL
     public async Task<IEnumerable<UserResponseDto>> GetAllAsync()
     {
         var users = await _repository.GetAllAsync();
@@ -32,11 +32,13 @@ public class UserService
         });
     }
 
-   
-    public async Task<UserResponseDto?> GetByIdAsync(Guid id)
+    // GET BY ID
+    public async Task<UserResponseDto> GetByIdAsync(Guid id)
     {
         var user = await _repository.GetByIdAsync(id);
-        if (user == null) return null;
+
+        if (user == null)
+            throw new NotFoundException("User not found");
 
         return new UserResponseDto
         {
@@ -46,19 +48,22 @@ public class UserService
             Role = user.Role,
             Phone = user.Phone,
             FinesOutstanding = user.FinesOutstanding,
-            Status = user.Status.ToString() 
+            Status = user.Status.ToString()
         };
     }
 
-    
+    // CREATE
     public async Task<UserResponseDto> CreateAsync(CreateUserDto dto)
     {
+        if (string.IsNullOrWhiteSpace(dto.Email))
+            throw new ArgumentException("Email is required");
+
         var user = new User
         {
             FullName = dto.FullName,
             Email = dto.Email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Role = dto.Role, // direct (no auth check now)
+            Role = dto.Role,
             Phone = dto.Phone,
             Address = dto.Address
         };
@@ -77,11 +82,13 @@ public class UserService
         };
     }
 
-    
-    public async Task<UserResponseDto?> UpdateAsync(Guid id, UpdateUserDto dto)
+    // UPDATE
+    public async Task<UserResponseDto> UpdateAsync(Guid id, UpdateUserDto dto)
     {
         var user = await _repository.GetByIdAsync(id);
-        if (user == null) return null;
+
+        if (user == null)
+            throw new NotFoundException("User not found");
 
         user.FullName = dto.FullName;
         user.Email = dto.Email;
@@ -99,28 +106,72 @@ public class UserService
             Role = updated.Role,
             Phone = updated.Phone,
             FinesOutstanding = updated.FinesOutstanding,
-            Status = updated.Status.ToString() 
+            Status = updated.Status.ToString()
         };
     }
 
-    
-    public async Task<bool> DeleteAsync(Guid id)
+    // DELETE
+    public async Task DeleteAsync(Guid id)
     {
-        return await _repository.DeleteAsync(id);
+        var user = await _repository.GetByIdAsync(id);
+
+        if (user == null)
+            throw new NotFoundException("User not found");
+
+        await _repository.DeleteAsync(id);
     }
 
+    // TOGGLE BLOCK
+    public async Task ToggleBlockAsync(Guid id)
+    {
+        var user = await _repository.GetByIdAsync(id);
 
-    public async Task<bool> ToggleBlockAsync(Guid id)
-{
-    var user = await _repository.GetByIdAsync(id);
-    if (user == null) return false;
+        if (user == null)
+            throw new NotFoundException("User not found");
 
-    user.Status = user.Status == UserStatus.Blocked
-        ? UserStatus.Active
-        : UserStatus.Blocked;
+        user.Status = user.Status == UserStatus.Blocked
+            ? UserStatus.Active
+            : UserStatus.Blocked;
 
-    await _repository.UpdateAsync(user);
+        await _repository.UpdateAsync(user);
+    }
 
-    return true;
-}
+    // GET BY EMAIL
+    public async Task<UserResponseDto> GetByEmailAsync(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            throw new ArgumentException("Email is required");
+
+        var user = await _repository.GetByEmailAsync(email);
+
+        if (user == null)
+            throw new NotFoundException("User not found");
+
+        return new UserResponseDto
+        {
+            Id = user.Id,
+            FullName = user.FullName,
+            Email = user.Email,
+            Role = user.Role,
+            Phone = user.Phone,
+            FinesOutstanding = user.FinesOutstanding,
+            Status = user.Status.ToString()
+        };
+    }
+
+    // CHANGE PASSWORD
+    public async Task ChangePasswordAsync(ChangePasswordDto dto)
+    {
+        var user = await _repository.GetByEmailAsync(dto.Email);
+
+        if (user == null)
+            throw new NotFoundException("User not found");
+
+        if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
+            throw new UnauthorizedAccessException("Invalid current password");
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+
+        await _repository.UpdateAsync(user);
+    }
 }

@@ -1,1 +1,164 @@
-<p>add-user works!</p>
+<div class="content">
+
+  <div class="card-dark form-container">
+
+    <h2 class="form-title">
+      {{ mode === 'edit' ? 'Edit User' : 'Add User' }}
+    </h2>
+
+    <form #userForm="ngForm" (ngSubmit)="submit(userForm)">
+
+      <div class="form-grid">
+
+        <!-- FULL NAME -->
+        <div class="form-group">
+          <label>Full Name *</label>
+
+          <input
+            type="text"
+            name="fullName"
+            [(ngModel)]="user.fullName"
+            required
+            minlength="3"
+            #fullName="ngModel"
+          >
+
+          @if (fullName.invalid && fullName.touched) {
+            <div class="error">
+              @if (fullName.errors?.['required']) {
+                <span>Full name is required</span>
+              }
+              @if (fullName.errors?.['minlength']) {
+                <span>Minimum 3 characters required</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- EMAIL -->
+        <div class="form-group">
+          <label>Email *</label>
+
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="user.email"
+            required
+            #email="ngModel"
+          >
+
+          @if (email.invalid && email.touched) {
+            <div class="error">
+              @if (email.errors?.['required']) {
+                <span>Email is required</span>
+              }
+              @if (email.errors?.['email']) {
+                <span>Invalid email format</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- PASSWORD (ONLY ADD) -->
+        @if (mode === 'add') {
+          <div class="form-group">
+            <label>Password *</label>
+
+            <input
+              type="password"
+              name="password"
+              [(ngModel)]="user.password"
+              required
+              minlength="6"
+              #password="ngModel"
+            >
+
+            @if (password.invalid && password.touched) {
+              <div class="error">
+                @if (password.errors?.['required']) {
+                  <span>Password is required</span>
+                }
+                @if (password.errors?.['minlength']) {
+                  <span>Minimum 6 characters required</span>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ROLE -->
+        <div class="form-group">
+          <label>Role *</label>
+
+          <select
+            name="role"
+            [(ngModel)]="user.role"
+            required
+            #role="ngModel"
+          >
+            <option [ngValue]="''">Select Role</option>
+            <option value="MEMBER">Member</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+
+          @if (role.invalid && role.touched) {
+            <div class="error">Role is required</div>
+          }
+        </div>
+
+        <!-- PHONE -->
+        <div class="form-group">
+          <label>Phone</label>
+
+          <input
+            type="text"
+            name="phone"
+            [(ngModel)]="user.phone"
+            pattern="^[0-9]{10}$"
+            #phone="ngModel"
+          >
+
+          @if (phone.invalid && phone.touched) {
+            <div class="error">
+              <span>Enter valid 10-digit phone number</span>
+            </div>
+          }
+        </div>
+
+        <!-- ADDRESS -->
+        <div class="form-group full-width">
+          <label>Address</label>
+
+          <textarea
+            name="address"
+            [(ngModel)]="user.address"
+            rows="3"
+            minlength="5"
+            #address="ngModel"
+          ></textarea>
+
+          @if (address.invalid && address.touched) {
+            <div class="error">
+              <span>Minimum 5 characters required</span>
+            </div>
+          }
+        </div>
+
+      </div>
+
+      <!-- BUTTON -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn-blue"
+          [disabled]="userForm.invalid"
+        >
+          {{ mode === 'edit' ? 'Update User' : 'Save User' }}
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+
+</div>

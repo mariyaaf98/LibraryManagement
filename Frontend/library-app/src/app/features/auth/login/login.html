@@ -1,0 +1,58 @@
+<div class="login-container">
+
+  <div class="login-card">
+
+    <!-- LEFT IMAGE -->
+    <div class="left-section">
+      <img src="assets/images/tree_bookshelf.jpg" />
+    </div>
+
+    <!-- RIGHT FORM -->
+    <div class="right-section">
+
+      <div class="form-box">
+
+        <div class="logo">Library System</div>
+
+
+        <form (ngSubmit)="login()">
+
+          <label>Email</label>
+          <input type="text" name="email" [(ngModel)]="email" placeholder="Enter your email or username" />
+
+          <!-- <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            [(ngModel)]="password"
+            placeholder="Password"
+          /> -->
+
+          <label>Password</label>
+
+          <div class="password-wrapper">
+            <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password"
+              placeholder="Enter your password" />
+
+            <button type="button" class="toggle-btn" (click)="togglePassword()">
+              <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+            </button>
+          </div>
+
+
+          <div class="options">
+
+            <a href="#">Forgot Password?</a>
+          </div>
+
+          <button class="login-btn" type="submit">Login</button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

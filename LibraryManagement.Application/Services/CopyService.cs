@@ -1,6 +1,7 @@
 using LibraryManagement.Domain.CopyEntity;
 using LibraryManagement.Application.CopyInterface;
 using LibraryManagement.API.DTOs.Copy;
+using LibraryManagement.Application.Exceptions;
 
 public class CopyService
 {
@@ -11,6 +12,7 @@ public class CopyService
         _repo = repo;
     }
 
+    // GET ALL
     public async Task<List<CopyResponseDto>> GetAllAsync()
     {
         var copies = await _repo.GetAllAsync();
@@ -28,10 +30,13 @@ public class CopyService
         }).ToList();
     }
 
-    public async Task<CopyResponseDto?> GetByIdAsync(Guid id)
+    // GET BY ID
+    public async Task<CopyResponseDto> GetByIdAsync(Guid id)
     {
         var c = await _repo.GetByIdAsync(id);
-        if (c == null) return null;
+
+        if (c == null)
+            throw new NotFoundException("Copy not found");
 
         return new CopyResponseDto
         {
@@ -46,8 +51,12 @@ public class CopyService
         };
     }
 
+    // CREATE
     public async Task<CopyResponseDto> CreateAsync(CreateCopyDto dto)
     {
+        if (dto.BookId == Guid.Empty)
+            throw new ArgumentException("BookId is required");
+
         var copy = new Copy
         {
             BookId = dto.BookId,
@@ -74,10 +83,13 @@ public class CopyService
         };
     }
 
-    public async Task<bool> UpdateAsync(Guid id, UpdateCopyDto dto)
+    // UPDATE
+    public async Task UpdateAsync(Guid id, UpdateCopyDto dto)
     {
         var copy = await _repo.GetByIdAsync(id);
-        if (copy == null) return false;
+
+        if (copy == null)
+            throw new NotFoundException("Copy not found");
 
         copy.Status = dto.Status;
         copy.Condition = dto.Condition;
@@ -86,18 +98,17 @@ public class CopyService
 
         _repo.Update(copy);
         await _repo.SaveChangesAsync();
-
-        return true;
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    // DELETE
+    public async Task DeleteAsync(Guid id)
     {
         var copy = await _repo.GetByIdAsync(id);
-        if (copy == null) return false;
+
+        if (copy == null)
+            throw new NotFoundException("Copy not found");
 
         _repo.Delete(copy);
         await _repo.SaveChangesAsync();
-
-        return true;
     }
 }

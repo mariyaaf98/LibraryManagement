@@ -3,10 +3,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../../../core/services/user.service';
 import { UpdateUserDto } from '../../../../../core/models/user-update.dto';
 import { CreateUserDto } from '../../../../../core/models/user-create.dto';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-add-user',
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './add-user.html',
   styleUrl: './add-user.css',
 })

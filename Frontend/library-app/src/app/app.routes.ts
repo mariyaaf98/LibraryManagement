@@ -1,13 +1,26 @@
 import { Routes } from '@angular/router';
 import { MemberLayoutComponent } from './layout/member-layout/member-layout';
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout';
+import { AuthGuard } from './core/guards/auth-guard';
+import { LoginGuard } from './core/guards/login-guard';
+
 
 
 export const routes: Routes = [
 
+
+  {
+    path: 'login',
+    canActivate: [LoginGuard],
+    loadComponent: () =>
+      import('./features/auth/login/login')
+        .then(m => m.LoginComponent)
+  },
+
   {
     path: 'member',
     component: MemberLayoutComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
@@ -27,6 +40,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/member/pages/author-details/author-details')
             .then(m => m.AuthorDetailsComponent)
+      },
+      {
+        path: 'authors',
+        loadComponent: () =>
+          import('./features/admin/users/authors/author-list/author-list')
+            .then(m => m.AuthorListComponent),
+        data: { readOnly: true }
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/member/pages/profile/profile').then(m => m.ProfileComponent)
       }
     ]
   },
@@ -35,6 +60,7 @@ export const routes: Routes = [
 
     path: 'admin',
     component: AdminLayoutComponent,
+    canActivate: [AuthGuard],
     children: [
 
       {
@@ -140,5 +166,7 @@ export const routes: Routes = [
     ]
   },
 
-  { path: '', redirectTo: 'member', pathMatch: 'full' }
+  { 
+    path: '', redirectTo: 'member', pathMatch: 'full' 
+  }
 ];

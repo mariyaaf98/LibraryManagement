@@ -18,6 +18,7 @@ using LibraryManagement.Application.SubCategoryService;
 using LibraryManagement.Application.BookRepository;
 using LibraryManagement.Infrastructure.BookRepository;
 using LibraryManagement.Application.CopyInterface;
+using LibraryManagement.Domain.UserEntity;
 //----------------------------------------------------
 
 Env.Load();
@@ -60,6 +61,7 @@ builder.Services.AddScoped<AuthorService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<SubCategoryService>();
 builder.Services.AddScoped<CopyService>();
+builder.Services.AddScoped<AuthService>();
 
 
 
@@ -78,9 +80,9 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 
-app.UseHttpsRedirection();     
+app.UseHttpsRedirection();
 
-app.UseCors("AllowAngular"); 
+app.UseCors("AllowAngular");
 
 //  SWAGGER
 if (app.Environment.IsDevelopment())
@@ -88,7 +90,34 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+
+app.UseMiddleware<ExceptionMiddleware>();
 // CONTROLLERS
 app.MapControllers();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    db.Database.Migrate();
+
+    var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL");
+    var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
+
+    if (!db.Users.Any(u => u.Email == adminEmail))
+    {
+        db.Users.Add(new User
+        {
+            FullName = "Admin",
+            Email = adminEmail,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword),
+            Role = "ADMIN",
+            CreatedAt = DateTime.UtcNow
+        });
+
+        db.SaveChanges();
+    }
+}
 
 app.Run();

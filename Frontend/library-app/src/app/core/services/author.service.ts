@@ -42,7 +42,7 @@ export class AuthorService {
 
 
   getBooksByAuthor(id: string) {
-  return this.http.get<any[]>(`${this.apiUrl}/author/${id}`);
+  return this.http.get<any[]>(`${this.apiUrl}/${id}/books`);
 
 }
 

@@ -46,7 +46,7 @@ export class AddBookComponent implements OnInit {
     private lookupService: LookupService,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef   // ✅ added
+    private cdr: ChangeDetectorRef   
   ) { }
 
   ngOnInit(): void {

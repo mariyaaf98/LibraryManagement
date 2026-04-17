@@ -1,81 +1,6 @@
-// import { HttpClient, HttpParams } from '@angular/common/http';
-// import { Injectable } from '@angular/core';
-// import { Observable } from 'rxjs';
-// import { CreateBookDto } from '../models/book-create.dto';
-// import { BookResponseDto } from '../models/book-response.dto';
-
-// @Injectable({
-//   providedIn: 'root',
-// })
-
-// export class BookService {
-
-//   private apiUrl = 'http://localhost:5223/api/book';
-
-//   constructor(private http: HttpClient) { }
-
-//   getBooks(): Observable<any[]> {
-//     return this.http.get<any[]>(this.apiUrl);
-//   }
-
-//   addBook(book: CreateBookDto): Observable<any> {
-//     return this.http.post(this.apiUrl, book);
-//   }
-
-//   deleteBook(id: string): Observable<void> {
-//     return this.http.delete<void>(`${this.apiUrl}/${id}`);
-//   }
-
-
-//   getBookById(id: string): Observable<BookResponseDto> {
-//     return this.http.get<BookResponseDto>(`${this.apiUrl}/${id}`);
-//   }
-
-//   updateBook(id: string, book: CreateBookDto): Observable<any> {
-//     return this.http.put(`${this.apiUrl}/${id}`, book);
-//   }
-
-//   // Search + Filter
-//   searchBooks(
-//     search?: string,
-//     genre?: string,
-//     status?: string
-//   ): Observable<BookResponseDto[]> {
-
-//     let params = new HttpParams();
-
-//     if (search) {
-//       params = params.set('search', search);
-//     }
-
-//     if (genre) {
-//       params = params.set('genre', genre);
-//     }
-
-//     if (status) {
-//       params = params.set('status', status);
-//     }
-
-//     return this.http.get<BookResponseDto[]>(
-//       `${this.apiUrl}/search`,
-//       { params }
-//     );
-//   }
-
-//   // upload image to Cloudinary
-//   uploadToCloudinary(formData: FormData) {
-//     return this.http.post(
-//       'https://api.cloudinary.com/v1_1/dvblzijuc/image/upload',
-//       formData
-//     );
-//   }
-// }
-
-
-
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { CreateBookDto } from '../models/book-create.dto';
 import { BookResponseDto } from '../models/book-response.dto';
 
@@ -83,37 +8,40 @@ import { BookResponseDto } from '../models/book-response.dto';
   providedIn: 'root',
 })
 export class BookService {
-  getGenres() {
-    throw new Error('Method not implemented.');
-  }
 
   private apiUrl = 'http://localhost:5223/api/book';
 
+  
   constructor(private http: HttpClient) {}
 
   // GET ALL BOOKS
   getBooks(): Observable<BookResponseDto[]> {
-    return this.http.get<BookResponseDto[]>(this.apiUrl);
+    return this.http.get<BookResponseDto[]>(this.apiUrl)
+      .pipe(catchError(this.handleError));
   }
 
-  // GET BY ID
+  // GET BOOK BY ID
   getBookById(id: string): Observable<BookResponseDto> {
-    return this.http.get<BookResponseDto>(`${this.apiUrl}/${id}`);
+    return this.http.get<BookResponseDto>(`${this.apiUrl}/${id}`)
+      .pipe(catchError(this.handleError));
   }
 
   // ADD BOOK
   addBook(book: CreateBookDto): Observable<void> {
-    return this.http.post<void>(this.apiUrl, book);
+    return this.http.post<void>(this.apiUrl, book)
+      .pipe(catchError(this.handleError));
   }
 
   // UPDATE BOOK
   updateBook(id: string, book: CreateBookDto): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, book);
+    return this.http.put<void>(`${this.apiUrl}/${id}`, book)
+      .pipe(catchError(this.handleError));
   }
 
   // DELETE BOOK
   deleteBook(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`)
+      .pipe(catchError(this.handleError));
   }
 
   // SEARCH + FILTER
@@ -132,14 +60,28 @@ export class BookService {
     return this.http.get<BookResponseDto[]>(
       `${this.apiUrl}/search`,
       { params }
-    );
+    ).pipe(catchError(this.handleError));
   }
 
-  // ✅ CLOUDINARY UPLOAD
+  // CLOUDINARY IMAGE UPLOAD
   uploadToCloudinary(formData: FormData): Observable<any> {
     return this.http.post(
       'https://api.cloudinary.com/v1_1/dvblzijuc/image/upload',
       formData
-    );
+    ).pipe(catchError(this.handleError));
+  }
+
+  // 🔥 CENTRAL ERROR HANDLER
+  private handleError(error: HttpErrorResponse) {
+
+    console.error('Backend Error:', error);
+
+    let message = 'Something went wrong';
+
+    if (error.error?.message) {
+      message = error.error.message;
+    }
+
+    return throwError(() => new Error(message));
   }
 }

@@ -1,7 +1,6 @@
 using LibraryManagement.API.DTOs.Copy;
 using Microsoft.AspNetCore.Mvc;
 
-
 [ApiController]
 [Route("api/[controller]")]
 public class CopiesController : ControllerBase
@@ -13,43 +12,44 @@ public class CopiesController : ControllerBase
         _service = service;
     }
 
+    // GET ALL
     [HttpGet]
-    public async Task<ActionResult<List<CopyResponseDto>>> GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        return Ok(await _service.GetAllAsync());
+        var result = await _service.GetAllAsync();
+        return Ok(result);
     }
 
+    // GET BY ID
     [HttpGet("{id}")]
-    public async Task<ActionResult<CopyResponseDto>> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _service.GetByIdAsync(id);
-        if (result == null) return NotFound();
-
         return Ok(result);
     }
 
+    // CREATE
     [HttpPost]
-    public async Task<ActionResult<CopyResponseDto>> Create(CreateCopyDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateCopyDto dto)
     {
         var result = await _service.CreateAsync(dto);
-        return Ok(result);
+
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);//201 created
     }
 
+    // UPDATE
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateCopyDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCopyDto dto)
     {
-        var success = await _service.UpdateAsync(id, dto);
-        if (!success) return NotFound();
-
+        await _service.UpdateAsync(id, dto);
         return NoContent();
     }
 
+    // DELETE
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var success = await _service.DeleteAsync(id);
-        if (!success) return NotFound();
-
+        await _service.DeleteAsync(id);
         return NoContent();
     }
 }

@@ -1,9 +1,9 @@
-
 using LibraryManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Domain.SubCategoryEntity;
 
 namespace LibraryManagement.Infrastructure.SubCategoryRepository;
+
 public class SubCategoryRepository : ISubCategoryRepository
 {
     private readonly AppDbContext _context;
@@ -13,20 +13,25 @@ public class SubCategoryRepository : ISubCategoryRepository
         _context = context;
     }
 
+    // GET ALL 
     public async Task<List<SubCategory>> GetAllAsync()
     {
         return await _context.SubCategories
-            .Include(x => x.Category) 
+            .Where(x => !x.IsDeleted)
+            .Include(x => x.Category)
             .ToListAsync();
     }
 
+    // GET BY ID (exclude deleted)
     public async Task<SubCategory?> GetByIdAsync(Guid id)
     {
         return await _context.SubCategories
+            .Where(x => !x.IsDeleted)
             .Include(x => x.Category)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
+    // CREATE
     public async Task<SubCategory> CreateAsync(SubCategory subCategory)
     {
         _context.SubCategories.Add(subCategory);
@@ -34,27 +39,21 @@ public class SubCategoryRepository : ISubCategoryRepository
         return subCategory;
     }
 
-    public async Task<bool> UpdateAsync(SubCategory subCategory)
+    //UPDATE 
+    public async Task UpdateAsync(SubCategory subCategory)
     {
-        var existing = await _context.SubCategories.FindAsync(subCategory.Id);
-
-        if (existing == null) return false;
-
-        existing.Name = subCategory.Name;
-        existing.Description = subCategory.Description;
-
         await _context.SaveChangesAsync();
-        return true;
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    // SOFT DELETE
+    public async Task DeleteAsync(Guid id)
     {
         var subCategory = await _context.SubCategories.FindAsync(id);
 
-        if (subCategory == null) return false;
+        if (subCategory == null)
+            return;
 
-        _context.SubCategories.Remove(subCategory);
+        subCategory.IsDeleted = true;
         await _context.SaveChangesAsync();
-        return true;
     }
 }

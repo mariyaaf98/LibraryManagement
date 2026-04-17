@@ -1,5 +1,7 @@
 using LibraryManagement.Application.CategoryInterface;
 using LibraryManagement.Domain.CategoryEntity;
+using LibraryManagement.Application.Exceptions;
+using LibraryManagement.API.DTOs.Category;
 
 namespace LibraryManagement.Application.CategoryService;
 
@@ -12,32 +14,54 @@ public class CategoryService
         _repo = repo;
     }
 
+    // GET ALL
     public async Task<List<Category>> GetAllAsync()
     {
         return await _repo.GetAllAsync();
     }
 
-    public async Task<Category?> GetByIdAsync(Guid id)
+    // GET BY ID
+    public async Task<Category> GetByIdAsync(Guid id)
     {
-        return await _repo.GetByIdAsync(id);
+        var category = await _repo.GetByIdAsync(id);
+
+        if (category == null)
+            throw new NotFoundException("Category not found");
+
+        return category;
     }
 
+    // CREATE
     public async Task<Category> CreateAsync(Category category)
     {
-        // 🔥 validation (important use of service)
         if (string.IsNullOrWhiteSpace(category.Name))
-            throw new Exception("Category name is required");
+            throw new ArgumentException("Category name is required");
 
         return await _repo.CreateAsync(category);
     }
 
-    public async Task<bool> UpdateAsync(Category category)
+    // UPDATE
+    public async Task UpdateAsync(Guid id, UpdateCategoryDto dto)
     {
-        return await _repo.UpdateAsync(category);
+        var existing = await _repo.GetByIdAsync(id);
+
+        if (existing == null)
+            throw new NotFoundException("Category not found");
+
+        existing.Name = dto.Name;
+        existing.Description = dto.Description;
+
+        await _repo.UpdateAsync(existing);
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    // DELETE
+    public async Task DeleteAsync(Guid id)
     {
-        return await _repo.DeleteAsync(id);
+        var existing = await _repo.GetByIdAsync(id);
+
+        if (existing == null)
+            throw new NotFoundException("Category not found");
+
+        await _repo.DeleteAsync(id);
     }
 }

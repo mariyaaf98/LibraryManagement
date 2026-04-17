@@ -19,7 +19,7 @@ public class UserRepository : IUserRepository
     public async Task<IEnumerable<User>> GetAllAsync()
     {
         return await _context.Users
-            .Where(u => !u.IsDeleted)
+            .Where(u => !u.IsDeleted && u.Role != "ADMIN")
             .ToListAsync();
     }
 
@@ -53,5 +53,12 @@ public class UserRepository : IUserRepository
 
         return true;
     }
+
+    public async Task<User?> GetByEmailAsync(string email)
+    {
+        return await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted);
+    }
+
 
 }

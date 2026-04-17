@@ -12,37 +12,48 @@ public class BookController : ControllerBase
         _service = service;
     }
 
+  
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        return Ok(await _service.GetAllAsync());
+        var books = await _service.GetAllAsync();
+        return Ok(books);
     }
 
+    
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var book = await _service.GetByIdAsync(id);
-
-        if (book == null)
-            return NotFound();
-
         return Ok(book);
     }
 
+   
     [HttpPost]
-    public async Task<IActionResult> Create(CreateBookDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateBookDto dto)
     {
         await _service.AddAsync(dto);
-        return Ok();
+
+        return Ok(new
+        {
+            message = "Book created successfully"
+        });
     }
 
+    
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateBookDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateBookDto dto)
     {
+        
         await _service.UpdateAsync(id, dto);
-        return Ok();
+
+        return Ok(new
+        {
+            message = "Book updated successfully"
+        });
     }
 
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -50,15 +61,17 @@ public class BookController : ControllerBase
         return NoContent();
     }
 
-
+    //SEARCH
     [HttpGet("search")]
     public async Task<IActionResult> Search(
-    [FromQuery] string? search = null,
-    [FromQuery] string? genre = null,
-    [FromQuery] string? status = null)
+        [FromQuery] string? search = null,
+        [FromQuery] string? genre = null,
+        [FromQuery] string? status = null)
     {
         var result = await _service.SearchBooksAsync(search, genre, status);
         return Ok(result);
     }
-
 }
+
+//[FromBody]-Get data from HTTP request BODY
+//[FromQuery]-Get data from URL query string

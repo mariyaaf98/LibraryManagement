@@ -84,19 +84,19 @@ export class CatalogueComponent implements OnInit {
       const matchStatus =
         !this.selectedStatus ||
 
-        // ✅ Available = ANY book with copies
+        // Available = ANY book with copies
         (this.selectedStatus === 'available' && copies > 0) ||
 
-        // ✅ Low stock
+        // Low stock
         (this.selectedStatus === 'low' && copies > 0 && copies <= 3) ||
 
-        // ✅ Out of stock
+        // Out of stock
         (this.selectedStatus === 'out' && copies === 0);
 
       return matchSearch && matchGenre && matchStatus;
     });
 
-    // ✅ Trigger UI update
+    // Trigger UI update
     this.cdr.detectChanges();
   }
 

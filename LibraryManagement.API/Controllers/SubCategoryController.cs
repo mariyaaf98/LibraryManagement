@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Mvc;
 using LibraryManagement.API.DTOs.SubCategory;
 using LibraryManagement.Application.SubCategoryService;
@@ -16,49 +15,44 @@ public class SubCategoryController : ControllerBase
         _service = service;
     }
 
+    // GET ALL
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        return Ok(await _service.GetAllAsync());
+        var result = await _service.GetAllAsync();
+        return Ok(result);
     }
 
+    // GET BY ID
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
         var result = await _service.GetByIdAsync(id);
-
-        if (result == null)
-            return NotFound();
-
         return Ok(result);
     }
 
+    // CREATE
     [HttpPost]
-    public async Task<IActionResult> Create(CreateSubCategoryDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateSubCategoryDto dto)
     {
         var result = await _service.CreateAsync(dto);
-        return Ok(result);
+
+        return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
     }
 
+    // UPDATE
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateSubCategoryDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateSubCategoryDto dto)
     {
-        var updated = await _service.UpdateAsync(id, dto);
-
-        if (!updated)
-            return NotFound();
-
+        await _service.UpdateAsync(id, dto);
         return NoContent();
     }
 
+    // DELETE
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var deleted = await _service.DeleteAsync(id);
-
-        if (!deleted)
-            return NotFound();
-
+        await _service.DeleteAsync(id);
         return NoContent();
     }
 }

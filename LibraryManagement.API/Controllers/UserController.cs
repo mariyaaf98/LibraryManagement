@@ -1,4 +1,3 @@
-
 using LibraryManagement.Application.DTOs.User;
 using LibraryManagement.Application.UserService;
 using Microsoft.AspNetCore.Mvc;
@@ -16,67 +15,72 @@ public class UserController : ControllerBase
         _service = service;
     }
 
-
+    // GET ALL
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        return Ok(await _service.GetAllAsync());
+        var users = await _service.GetAllAsync();
+        return Ok(users);
     }
 
-
+    // GET BY ID
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var user = await _service.GetByIdAsync(id);
-
-        if (user == null)
-            return NotFound("User not found");
-
         return Ok(user);
     }
 
-
+    // CREATE
     [HttpPost]
-    public async Task<IActionResult> Create(CreateUserDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
     {
         var created = await _service.CreateAsync(dto);
 
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
-
+    // UPDATE
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateUserDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserDto dto)
     {
         var updated = await _service.UpdateAsync(id, dto);
-
-        if (updated == null)
-            return NotFound("User not found");
-
         return Ok(updated);
     }
 
-
+    // DELETE
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var deleted = await _service.DeleteAsync(id);
-
-        if (!deleted)
-            return NotFound("User not found");
-
+        await _service.DeleteAsync(id);
         return NoContent();
     }
 
-
+    // TOGGLE BLOCK
     [HttpPatch("{id}/toggle-block")]
     public async Task<IActionResult> ToggleBlock(Guid id)
     {
-        var result = await _service.ToggleBlockAsync(id);
-
-        if (!result)
-            return NotFound("User not found");
-
+        await _service.ToggleBlockAsync(id);
         return NoContent();
+    }
+
+    // GET PROFILE
+    [HttpGet("profile")]
+    public async Task<IActionResult> GetProfile([FromQuery] string email)
+    {
+        var user = await _service.GetByEmailAsync(email);
+        return Ok(user);
+    }
+
+    // CHANGE PASSWORD
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+    {
+        await _service.ChangePasswordAsync(dto);
+
+        return Ok(new
+        {
+            message = "Password changed successfully"
+        });
     }
 }

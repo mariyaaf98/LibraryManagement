@@ -60,9 +60,9 @@ export class ListBooksComponent implements OnInit {
 
             this.isLoading = false;
 
-            // 🔥 Manually trigger change detection
             this.cdr.detectChanges();
           },
+          //Error Handling (Copies API),Prevent app crash & stop loading
           error: (err) => {
             console.error('Error loading copies:', err);
             this.isLoading = false;

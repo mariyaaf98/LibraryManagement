@@ -14,60 +14,63 @@ public class BookRepository : IBookRepository
         _context = context;
     }
 
+    // GET ALL
     public async Task<IEnumerable<Book>> GetAllAsync()
     {
         return await _context.Books
-        .Where(b => !b.IsDeleted)
-        .Include(b => b.SubCategory)
-        .Include(b => b.BookAuthors)
-            .ThenInclude(ba => ba.Author)
-        .Include(b => b.BookCategories)
-            .ThenInclude(bc => bc.Category)
-        .ToListAsync();
+            .Where(b => !b.IsDeleted)
+            .Include(b => b.SubCategory)
+            .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
+            .Include(b => b.BookCategories)
+                .ThenInclude(bc => bc.Category)
+            .ToListAsync();
     }
 
-
+    // GET BY ID
     public async Task<Book?> GetByIdAsync(Guid id)
-{
-    return await _context.Books
-        .Where(b => !b.IsDeleted)
-        .Include(b => b.SubCategory)
+    {
+        return await _context.Books
+            .Where(b => !b.IsDeleted)
+            .Include(b => b.SubCategory)
+            .Include(b => b.Copies)
+            .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
+            .Include(b => b.BookCategories)
+                .ThenInclude(bc => bc.Category)
+            .FirstOrDefaultAsync(b => b.Id == id);
+    }
 
-        .Include(b => b.Copies)
-
-        .Include(b => b.BookAuthors)
-            .ThenInclude(ba => ba.Author)
-
-        .Include(b => b.BookCategories)
-            .ThenInclude(bc => bc.Category)
-
-        .FirstOrDefaultAsync(b => b.Id == id);
-}
-
+    // CREATE
     public async Task AddAsync(Book book)
     {
         await _context.Books.AddAsync(book);
         await _context.SaveChangesAsync();
     }
 
+    // UPDATE
     public async Task UpdateAsync(Book book)
     {
-        _context.Books.Update(book);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(); 
     }
 
+    // DELETE (Soft Delete)
     public async Task DeleteAsync(Guid id)
     {
         var book = await _context.Books.FindAsync(id);
 
-        if (book == null) return;
+        if (book == null)
+            return;
 
         book.IsDeleted = true;
-
         await _context.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Book>> SearchAsync(string? search, string? genre, string? status)
+    // SEARCH
+    public async Task<IEnumerable<Book>> SearchAsync(
+        string? search,
+        string? genre,
+        string? status)
     {
         var query = _context.Books
             .Where(b => !b.IsDeleted)
@@ -77,9 +80,12 @@ public class BookRepository : IBookRepository
                 .ThenInclude(ba => ba.Author)
             .Include(b => b.BookCategories)
                 .ThenInclude(bc => bc.Category)
-            .AsQueryable();
+            .AsQueryable();//is used to build a query step by step. 
+                          // It does not run immediately. 
+                          // The query runs only at the end when we call ToListAsync().
 
-        // 🔍 Search
+
+        // SEARCH TEXT
         if (!string.IsNullOrWhiteSpace(search))
         {
             query = query.Where(b =>
@@ -89,23 +95,31 @@ public class BookRepository : IBookRepository
             );
         }
 
-        // catedory
+        // GENRE FILTER
         if (!string.IsNullOrWhiteSpace(genre))
         {
-            query = query.Where(b => b.SubCategory!.Name == genre);
+            query = query.Where(b =>
+                b.SubCategory != null &&
+                b.SubCategory.Name == genre
+            );
         }
 
-        //  Status
+        // STATUS FILTER
         if (!string.IsNullOrWhiteSpace(status))
         {
+            status = status.ToLower();
+
             if (status == "available")
-                query = query.Where(b => b.Copies.Count > 3);
+                query = query.Where(b => b.Copies.Count(c => c.Status == "AVAILABLE") > 0);
 
             else if (status == "low")
-                query = query.Where(b => b.Copies.Count > 0 && b.Copies.Count <= 3);
+                query = query.Where(b =>
+                    b.Copies.Count(c => c.Status == "AVAILABLE") > 0 &&
+                    b.Copies.Count(c => c.Status == "AVAILABLE") <= 3);
 
             else if (status == "out")
-                query = query.Where(b => b.Copies.Count == 0);
+                query = query.Where(b =>
+                    b.Copies.Count(c => c.Status == "AVAILABLE") == 0);
         }
 
         return await query.ToListAsync();

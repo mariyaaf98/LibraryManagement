@@ -1,0 +1,79 @@
+<div class="profile-container">
+
+  @if (user) {
+
+  <div class="profile-card">
+
+    <!-- 🔹 HEADER -->
+    <div class="profile-header">
+      <div class="avatar">
+        {{ user.fullName.charAt(0) }}
+      </div>
+      <div>
+        <h2>{{ user.fullName }}</h2>
+        <p class="role">{{ user.role }}</p>
+      </div>
+    </div>
+
+    <!-- 🔹 DETAILS -->
+    <div class="profile-details">
+
+      <div class="detail-item">
+        <span>Email</span>
+        <strong>{{ user.email }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Phone</span>
+        <strong>{{ user.phone || '-' }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Fines</span>
+        <strong>₹ {{ user.finesOutstanding }}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Status</span>
+        <strong class="status" [ngClass]="user.status.toLowerCase()">
+          {{ user.status }}
+        </strong>
+      </div>
+
+    </div>
+
+    <!-- 🔹 ACTION -->
+    <button class="edit-btn">Edit Profile</button>
+
+
+    <br><br><br><br>
+    <!-- 🔹 CHANGE PASSWORD -->
+
+    <div class="mb-4 text-center">Resent Password</div>
+    <div class="form-group">
+      <input type="password" [(ngModel)]="currentPassword" placeholder="Current Password"
+        [class.input-error]="currentPasswordError" />
+
+      @if (currentPasswordError) {
+      <p class="error-text">{{ currentPasswordError }}</p>
+      }
+    </div>
+    <br>
+    <div class="form-group">
+      <input type="password" [(ngModel)]="newPassword" placeholder="New Password" />
+    </div>
+
+    <br>
+    <button class="password-btn" (click)="changePassword()">
+      Update Password
+    </button>
+
+    @if (message && messageType === 'success') {
+    <p class="success-text">{{ message }}</p>
+    }
+
+  </div>
+
+  }
+
+</div>

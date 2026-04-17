@@ -2,10 +2,10 @@ using LibraryManagement.API.DTOs.Author;
 using LibraryManagement.API.DTOs.Book;
 using LibraryManagement.API.DTOs.Copy;
 using LibraryManagement.Application.BookRepository;
+using LibraryManagement.Application.Exceptions;
 using LibraryManagement.Domain.BookAuthorEntity;
 using LibraryManagement.Domain.BookCategoryEntity;
 using LibraryManagement.Domain.BookEntity;
-using LibraryManagement.Domain.CopyEntity;
 
 public class BookService
 {
@@ -16,6 +16,7 @@ public class BookService
         _repository = repository;
     }
 
+    // GET ALL
     public async Task<IEnumerable<BookResponseDto>> GetAllAsync()
     {
         var books = await _repository.GetAllAsync();
@@ -26,28 +27,27 @@ public class BookService
             Title = b.Title,
             Isbn = b.Isbn,
             PublishedYear = b.PublishedYear,
-
             CoverImageUrl = b.CoverImageUrl,
-
             SubCategoryName = b.SubCategory!.Name,
-            Authors = b.BookAuthors
-    .Select(a => new AuthorResponseDto
-    {
-        Id = a.Author!.Id,
-        FullName = a.Author.FullName,
-        BirthDate = a.Author.BirthDate
-    })
-    .ToList(),
-            Categories = b.BookCategories.Select(c => c.Category!.Name).ToList()
+            Authors = b.BookAuthors.Select(a => new AuthorResponseDto
+            {
+                Id = a.Author!.Id,
+                FullName = a.Author.FullName,
+                BirthDate = a.Author.BirthDate
+            }).ToList(),
+            Categories = b.BookCategories
+                .Select(c => c.Category!.Name)
+                .ToList()
         });
     }
 
-
-    public async Task<BookResponseDto?> GetByIdAsync(Guid id)
+    // GET BY ID
+    public async Task<BookResponseDto> GetByIdAsync(Guid id)
     {
         var b = await _repository.GetByIdAsync(id);
 
-        if (b == null) return null;
+        if (b == null)
+            throw new NotFoundException("Book not found");
 
         return new BookResponseDto
         {
@@ -56,17 +56,14 @@ public class BookService
             Isbn = b.Isbn,
             PublishedYear = b.PublishedYear,
             CoverImageUrl = b.CoverImageUrl,
-
             SubCategoryName = b.SubCategory!.Name,
 
-            Authors = b.BookAuthors
-        .Select(a => new AuthorResponseDto
-        {
-            Id = a.Author!.Id,
-            FullName = a.Author.FullName,
-            BirthDate = a.Author.BirthDate
-        })
-        .ToList(),
+            Authors = b.BookAuthors.Select(a => new AuthorResponseDto
+            {
+                Id = a.Author!.Id,
+                FullName = a.Author.FullName,
+                BirthDate = a.Author.BirthDate
+            }).ToList(),
 
             Categories = b.BookCategories
                 .Select(c => c.Category!.Name)
@@ -75,7 +72,6 @@ public class BookService
             Language = b.Language,
             Summary = b.Summary,
 
-            
             Copies = b.Copies.Select(c => new CopyResponseDto
             {
                 Id = c.Id,
@@ -89,12 +85,11 @@ public class BookService
             }).ToList(),
 
             TotalCopies = b.Copies.Count(),
-
             AvailableCopies = b.Copies.Count(c => c.Status == "AVAILABLE")
         };
     }
 
-
+    // CREATE
     public async Task AddAsync(CreateBookDto dto)
     {
         var book = new Book
@@ -111,7 +106,7 @@ public class BookService
             SubCategoryId = dto.SubCategoryId
         };
 
-        // Add Authors
+        // Authors
         book.BookAuthors = dto.AuthorIds
             .Select(aid => new BookAuthor
             {
@@ -119,22 +114,23 @@ public class BookService
                 AuthorId = aid
             }).ToList();
 
-        // Add Categories
+        // Categories
         book.BookCategories = dto.CategoryIds
             .Select(cid => new BookCategory
             {
-                CategoryId = cid
+                BookId = book.Id
             }).ToList();
-
-
 
         await _repository.AddAsync(book);
     }
 
+    // UPDATE
     public async Task UpdateAsync(Guid id, UpdateBookDto dto)
     {
         var book = await _repository.GetByIdAsync(id);
-        if (book == null) return;
+
+        if (book == null)
+            throw new NotFoundException("Book not found");
 
         book.Title = dto.Title;
         book.Subtitle = dto.Subtitle;
@@ -146,41 +142,42 @@ public class BookService
         book.CoverImageUrl = dto.CoverImageUrl;
         book.SubCategoryId = dto.SubCategoryId;
 
-        // Clear old relations
+        // Reset relations
         book.BookAuthors.Clear();
         book.BookCategories.Clear();
 
-        // Re-add
         book.BookAuthors = dto.AuthorIds
             .Select(aid => new BookAuthor
             {
                 BookId = book.Id,
                 AuthorId = aid
-            })
-            .ToList();
+            }).ToList();
 
         book.BookCategories = dto.CategoryIds
-            .Select(cid => new BookCategory { CategoryId = cid })
-            .ToList();
+            .Select(cid => new BookCategory
+            {
+                BookId = book.Id
+            }).ToList();
 
         await _repository.UpdateAsync(book);
     }
 
-
+    // DELETE
     public async Task DeleteAsync(Guid id)
     {
         var book = await _repository.GetByIdAsync(id);
 
-        if (book == null) return;
+        if (book == null)
+            throw new NotFoundException("Book not found");
 
         await _repository.DeleteAsync(id);
     }
 
-
+    // SEARCH
     public async Task<IEnumerable<BookResponseDto>> SearchBooksAsync(
-    string? search,
-    string? genre,
-    string? status)
+        string? search,
+        string? genre,
+        string? status)
     {
         var books = await _repository.SearchAsync(search, genre, status);
 
@@ -191,19 +188,20 @@ public class BookService
             Isbn = b.Isbn,
             PublishedYear = b.PublishedYear,
             CoverImageUrl = b.CoverImageUrl,
-
-            TotalCopies = b.Copies.Count(),
-
             SubCategoryName = b.SubCategory!.Name,
-            Authors = b.BookAuthors
-    .Select(a => new AuthorResponseDto
-    {
-        Id = a.Author!.Id,
-        FullName = a.Author.FullName,
-        BirthDate = a.Author.BirthDate
-    })
-    .ToList(),
-            Categories = b.BookCategories.Select(c => c.Category!.Name).ToList()
+
+            Authors = b.BookAuthors.Select(a => new AuthorResponseDto
+            {
+                Id = a.Author!.Id,
+                FullName = a.Author.FullName,
+                BirthDate = a.Author.BirthDate
+            }).ToList(),
+
+            Categories = b.BookCategories
+                .Select(c => c.Category!.Name)
+                .ToList(),
+
+            TotalCopies = b.Copies.Count()
         });
     }
 }

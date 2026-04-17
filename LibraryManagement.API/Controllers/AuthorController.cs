@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using LibraryManagement.Application.AuthorService;
 using LibraryManagement.API.DTOs.Author;
-using LibraryManagement.Domain.AuthorEntity;
-using LibraryManagement.Application.AuthorRepository;
-using LibraryManagement.API.DTOs.Book;
-
 
 namespace LibraryManagement.API.Controllers;
 
@@ -11,130 +8,61 @@ namespace LibraryManagement.API.Controllers;
 [Route("api/[controller]")]
 public class AuthorController : ControllerBase
 {
-    private readonly IAuthorRepository _repository;
+    private readonly AuthorService _service;
 
-    public AuthorController(IAuthorRepository repository)
+    public AuthorController(AuthorService service)
     {
-        _repository = repository;
+        _service = service; 
     }
 
-
+    // GET ALL AUTHORS
     [HttpGet]
     public async Task<IActionResult> GetAuthors()
     {
-        var authors = await _repository.GetAllActiveAsync();
-
-        var result = authors.Select(a => new AuthorResponseDto
-        {
-            Id = a.Id,
-            FullName = a.FullName,
-            BirthDate = a.BirthDate
-        });
-
-        return Ok(result);
+        var authors = await _service.GetAllAsync();
+        return Ok(authors);
     }
 
-
+    // GET AUTHOR BY ID
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAuthorById(Guid id)
     {
-        var author = await _repository.GetByIdAsync(id);
-
-        if (author == null)
-            return NotFound("Author not found");
-
-        var result = new AuthorResponseDto
-        {
-            Id = author.Id,
-            FullName = author.FullName,
-            BirthDate = author.BirthDate
-        };
-
-        return Ok(result);
+        var author = await _service.GetByIdAsync(id);
+        return Ok(author);
     }
 
-
+    // CREATE AUTHOR
     [HttpPost]
     public async Task<IActionResult> CreateAuthor([FromBody] CreateAuthorDto dto)
     {
-        var author = new Author
-        {
-            GivenName = dto.GivenName,
-            FamilyName = dto.FamilyName,
-            FullName = $"{dto.GivenName} {dto.FamilyName}",
-            BirthDate = dto.BirthDate,
-            Biography = dto.Biography,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-
-        await _repository.AddAsync(author);
-
-        var result = new AuthorResponseDto
-        {
-            Id = author.Id,
-            FullName = author.FullName,
-            BirthDate = author.BirthDate
-        };
-
+        var result = await _service.CreateAsync(dto);
         return Ok(result);
     }
 
-
+    // UPDATE AUTHOR
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateAuthor(Guid id, [FromBody] UpdateAuthorDto dto)
     {
         if (id != dto.Id)
-            return BadRequest("ID mismatch");
+            throw new ArgumentException("ID mismatch");
 
-        var author = await _repository.GetByIdAsync(id);
-
-        if (author == null)
-            return NotFound("Author not found");
-
-        author.GivenName = dto.GivenName;
-        author.FamilyName = dto.FamilyName;
-        author.FullName = $"{dto.GivenName ?? ""} {dto.FamilyName ?? ""}".Trim();
-
-        author.BirthDate = dto.BirthDate.HasValue
-            ? DateTime.SpecifyKind(dto.BirthDate.Value, DateTimeKind.Utc)
-            : null;
-
-        author.Biography = dto.Biography;
-        author.UpdatedAt = DateTime.UtcNow;
-
-        await _repository.UpdateAsync(author);
-
+        await _service.UpdateAsync(id, dto);
         return NoContent();
     }
 
-
+    // DELETE AUTHOR (Soft Delete)
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAuthor(Guid id)
     {
-        var author = await _repository.GetByIdAsync(id);
-
-        if (author == null)
-            return NotFound("Author not found");
-
-        author.IsDeleted = true;
-        author.UpdatedAt = DateTime.UtcNow;
-
-        await _repository.UpdateAsync(author);
-
+        await _service.DeleteAsync(id);
         return NoContent();
     }
 
-    [HttpGet("author/{authorId}")]
-    public async Task<IEnumerable<BookResponseDto>> GetBooksByAuthorAsync(Guid authorId)
+    // GET BOOKS BY AUTHOR
+    [HttpGet("{authorId}/books")]
+    public async Task<IActionResult> GetBooksByAuthor(Guid authorId)
     {
-        var books = await _repository.GetBooksByAuthorAsync(authorId);
-
-        return books.Select(b => new BookResponseDto
-        {
-            Id = b.Id,
-            Title = b.Title,
-            CoverImageUrl = b.CoverImageUrl
-        });
+        var books = await _service.GetBooksByAuthorAsync(authorId);
+        return Ok(books);
     }
 }

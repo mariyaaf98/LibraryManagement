@@ -24,44 +24,50 @@ export class LoginComponent {
     this.showPassword = !this.showPassword;
   }
 
-  login() {
-    const payload = {
-      email: this.email,
-      password: this.password
-    };
-
-    console.log('Payload:', payload);
-
-    this.authService.login(payload).subscribe({
-      next: (res: any) => {
-        console.log('Full response:', res);
-
-        const role = res.role?.toUpperCase();
-        localStorage.setItem('role', role);
-
-        const user = {
-          email: this.email,
-          name: this.email.split('@')[0]
-        };
-
-        localStorage.setItem('user', JSON.stringify(user));
-
-        if (role === 'ADMIN') {
-          this.router.navigate(['/admin'], { replaceUrl: true });
-        } else {
-          this.router.navigate(['/member'], { replaceUrl: true });
-        }
-      },
-      error: (err) => {
-        console.log("ERROR", err);
-
-        // Extract backend message
-        const message = err?.error?.message || "Login failed";
-
-        alert(message);
+    login() {
+      if (!this.email || !this.password) {
+        alert('Email and Password are required');
+        return;
       }
-    });
+
+      const payload = {
+        email: this.email,
+        password: this.password
+      };
+ 
+      this.authService.login(payload).subscribe({
+        next: (res: any) => {
+          console.log('Full response:', res);
+
+          // Store role safely
+          const role = res.role?.toUpperCase() || 'MEMBER';
+          localStorage.setItem('role', role);
+
+          // Store user info
+          const user = {
+            email: this.email,
+            name: this.email.split('@')[0]
+          };
+          localStorage.setItem('user', JSON.stringify(user));
+
+        
+          this.router.navigate(
+            [role === 'ADMIN' ? '/admin' : '/member'],
+            { replaceUrl: true }
+          );
+        },
+
+        error: (err) => {
+          console.log("ERROR", err);
+
+          const message =
+            err?.error?.message ||
+            err?.error?.title ||
+            "Login failed";
+
+          alert(message);
+        }
+      });
+    }
+
   }
-
-
-}

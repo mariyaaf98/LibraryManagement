@@ -1,8 +1,10 @@
 using LibraryManagement.API.DTOs.Copy;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CopiesController : ControllerBase
 {
     private readonly CopyService _service;
@@ -30,6 +32,7 @@ public class CopiesController : ControllerBase
 
     // CREATE
     [HttpPost]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Create([FromBody] CreateCopyDto dto)
     {
         var result = await _service.CreateAsync(dto);
@@ -39,6 +42,7 @@ public class CopiesController : ControllerBase
 
     // UPDATE
     [HttpPut("{id}")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCopyDto dto)
     {
         await _service.UpdateAsync(id, dto);
@@ -47,6 +51,7 @@ public class CopiesController : ControllerBase
 
     // DELETE
     [HttpDelete("{id}")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _service.DeleteAsync(id);

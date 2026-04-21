@@ -1,11 +1,13 @@
 using LibraryManagement.Application.DTOs.User;
 using LibraryManagement.Application.UserService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagement.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class UserController : ControllerBase
 {
     private readonly UserService _service;
@@ -33,6 +35,7 @@ public class UserController : ControllerBase
 
     // CREATE
     [HttpPost]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
     {
         var created = await _service.CreateAsync(dto);
@@ -42,6 +45,7 @@ public class UserController : ControllerBase
 
     // UPDATE
     [HttpPut("{id}")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserDto dto)
     {
         var updated = await _service.UpdateAsync(id, dto);
@@ -50,6 +54,7 @@ public class UserController : ControllerBase
 
     // DELETE
     [HttpDelete("{id}")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _service.DeleteAsync(id);
@@ -58,6 +63,7 @@ public class UserController : ControllerBase
 
     // TOGGLE BLOCK
     [HttpPatch("{id}/toggle-block")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> ToggleBlock(Guid id)
     {
         await _service.ToggleBlockAsync(id);

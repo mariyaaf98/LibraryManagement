@@ -48,7 +48,7 @@ public class UserRepository : IUserRepository
         var user = await _context.Users.FindAsync(id);
         if (user == null) return false;
 
-        user.IsDeleted = true; // soft delete
+        user.IsDeleted = true; 
         await _context.SaveChangesAsync();
 
         return true;

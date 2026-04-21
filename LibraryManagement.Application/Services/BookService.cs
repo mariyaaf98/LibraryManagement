@@ -92,6 +92,13 @@ public class BookService
     // CREATE
     public async Task AddAsync(CreateBookDto dto)
     {
+        var existingBooks = await _repository.GetAllAsync();
+
+        if (existingBooks.Any(b => b.Isbn == dto.Isbn))
+        {
+            throw new BadRequestException("ISBN already exists");
+        }
+
         var book = new Book
         {
             Id = Guid.NewGuid(),
@@ -118,7 +125,8 @@ public class BookService
         book.BookCategories = dto.CategoryIds
             .Select(cid => new BookCategory
             {
-                BookId = book.Id
+                BookId = book.Id,
+                CategoryId = cid
             }).ToList();
 
         await _repository.AddAsync(book);
@@ -156,7 +164,8 @@ public class BookService
         book.BookCategories = dto.CategoryIds
             .Select(cid => new BookCategory
             {
-                BookId = book.Id
+                BookId = book.Id,
+                CategoryId = cid
             }).ToList();
 
         await _repository.UpdateAsync(book);

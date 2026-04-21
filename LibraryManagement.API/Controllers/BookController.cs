@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using LibraryManagement.API.DTOs.Book;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class BookController : ControllerBase
 {
     private readonly BookService _service;
@@ -30,6 +32,7 @@ public class BookController : ControllerBase
 
    
     [HttpPost]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Create([FromBody] CreateBookDto dto)
     {
         await _service.AddAsync(dto);
@@ -42,6 +45,7 @@ public class BookController : ControllerBase
 
     
     [HttpPut("{id}")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateBookDto dto)
     {
         
@@ -55,6 +59,7 @@ public class BookController : ControllerBase
 
     
     [HttpDelete("{id}")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _service.DeleteAsync(id);

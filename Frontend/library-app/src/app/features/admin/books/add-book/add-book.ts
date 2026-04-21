@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { BookService } from '../../../../core/services/book';
 import { CreateBookDto } from '../../../../core/models/book-create.dto';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { LookupService } from '../../../../core/services/lookup';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -46,11 +46,10 @@ export class AddBookComponent implements OnInit {
     private lookupService: LookupService,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef   
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-
     const id = this.route.snapshot.paramMap.get('id');
 
     if (id) {
@@ -63,10 +62,10 @@ export class AddBookComponent implements OnInit {
         this.loadBook(this.bookId);
       }
     });
+
   }
 
   loadDropdowns(callback?: () => void) {
-
     this.lookupService.getSubCategories().subscribe(sub => {
       this.subCategories = sub;
 
@@ -77,18 +76,15 @@ export class AddBookComponent implements OnInit {
           this.categories = cat;
 
           if (callback) callback();
-
           this.cdr.detectChanges();
         });
-
       });
-
     });
+
   }
 
   loadBook(id: string) {
     this.bookService.getBookById(id).subscribe(res => {
-
 
       const authorIds = this.authors
         .filter(a => res.authors.some(r => r.id === a.id))
@@ -111,7 +107,6 @@ export class AddBookComponent implements OnInit {
         language: res.language || '',
         summary: res.summary || '',
         coverImageUrl: res.coverImageUrl || '',
-
         subCategoryId,
         authorIds,
         categoryIds
@@ -119,6 +114,7 @@ export class AddBookComponent implements OnInit {
 
       this.cdr.detectChanges();
     });
+
   }
 
   onFileSelected(event: any) {
@@ -134,13 +130,43 @@ export class AddBookComponent implements OnInit {
 
     this.selectedFile = file;
     this.cdr.detectChanges();
+
   }
 
-  addBook(form: any) {
+  // =========================
+  // MAIN SUBMIT FUNCTION
+  // =========================
+  addBook(form: NgForm) {
+    console.log('FINAL BOOK:', this.book);
 
+    // Step 1: mark all fields touched
     if (form.invalid) {
       Object.values(form.controls).forEach((c: any) => c.markAsTouched());
-      alert('Please fix form errors');
+    }
+
+    // Step 2: manual validation (IMPORTANT)
+    if (!this.book.title || this.book.title.trim().length < 2) {
+      alert('Title is required (min 2 chars)');
+      return;
+    }
+
+    if (!this.book.subCategoryId) {
+      alert('Select subcategory');
+      return;
+    }
+
+    if (!this.book.language) {
+      alert('Select language');
+      return;
+    }
+
+    if (!this.book.categoryIds || this.book.categoryIds.length === 0) {
+      alert('Select at least one category');
+      return;
+    }
+
+    if (!this.book.authorIds || this.book.authorIds.length === 0) {
+      alert('Select at least one author');
       return;
     }
 
@@ -149,18 +175,27 @@ export class AddBookComponent implements OnInit {
       return;
     }
 
-    this.book.publishedYear =
-      this.book.publishedYear ? Number(this.book.publishedYear) : null;
+    // Step 3: convert year 
+    const year: any = this.book.publishedYear;
 
+    if (year === '' || year === undefined || year === null) {
+      this.book.publishedYear = null;
+    } else {
+      this.book.publishedYear = Number(year);
+    }
+
+    // Step 4: edit or add
     if (this.mode === 'edit') {
       this.selectedFile ? this.uploadAndUpdate() : this.updateBook();
       return;
     }
 
+    // Step 5: create
     this.uploadAndCreate(form);
+
   }
 
-  uploadAndCreate(form: any) {
+  uploadAndCreate(form: NgForm) {
     const formData = new FormData();
     formData.append('file', this.selectedFile);
     formData.append('upload_preset', 'my_preset');
@@ -178,13 +213,17 @@ export class AddBookComponent implements OnInit {
           this.router.navigate(['/admin/list-books']);
         },
         error: err => {
-          console.error(err);
+          console.log('FULL ERROR:', err);
+
+          alert(err.error?.message || 'Something went wrong');
+
           this.isLoading = false;
         }
       });
 
       this.cdr.detectChanges();
     });
+
   }
 
   uploadAndUpdate() {
@@ -197,6 +236,7 @@ export class AddBookComponent implements OnInit {
       this.updateBook();
       this.cdr.detectChanges();
     });
+
   }
 
   updateBook() {
@@ -215,5 +255,6 @@ export class AddBookComponent implements OnInit {
     });
 
     this.cdr.detectChanges();
+
   }
 }

@@ -1,26 +1,18 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class LoginGuard implements CanActivate {
+import { CanActivateFn, Router } from '@angular/router';
+import { inject } from '@angular/core';
 
-  constructor(private router: Router) {}
+export const LoginGuard: CanActivateFn = () => {
 
-  canActivate(): boolean {
-    const role = localStorage.getItem('role');
+  const router = inject(Router);
+  const role = localStorage.getItem('role');
 
-    if (role) {
-      // already logged in → redirect
-      if (role === 'ADMIN') {
-        this.router.navigate(['/admin'], { replaceUrl: true });
-      } else {
-        this.router.navigate(['/member'], { replaceUrl: true });
-      }
-      return false;
-    }
-
-    return true;
+  if (role) {
+    router.navigate([role === 'ADMIN' ? '/admin' : '/member'], {
+      replaceUrl: true
+    });
+    return false;
   }
-}
+
+  return true;
+};

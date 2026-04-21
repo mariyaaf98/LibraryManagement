@@ -1,42 +1,23 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthGuard implements CanActivate {
+import { CanActivateFn, Router } from '@angular/router';
+import { inject } from '@angular/core';
 
-  constructor(private router: Router) {}
+export const AuthGuard: CanActivateFn = (route, state) => {
 
-  canActivate(
-  route: ActivatedRouteSnapshot,//Details about the current route
-  state: RouterStateSnapshot //Full URL
-): boolean {
-
+  const router = inject(Router);
   const role = localStorage.getItem('role');
 
   // Not logged in
-  if (!role || role === 'undefined') {
-    this.router.navigate(['/login'], { replaceUrl: true });
+  if (!role) {
+    router.navigate(['/login'], { replaceUrl: true });
     return false;
   }
 
-  // MEMBER trying ADMIN
+  // MEMBER trying ADMIN route
   if (state.url.startsWith('/admin') && role !== 'ADMIN') {
-    this.router.navigate(['/member'], { replaceUrl: true });
-    return false;
-  }
-
-  //  ADMIN trying LOGIN (back button case)
-  if (state.url.startsWith('/login')) {
-    if (role === 'ADMIN') {
-      this.router.navigate(['/admin'], { replaceUrl: true });
-    } else {
-      this.router.navigate(['/member'], { replaceUrl: true });
-    }
+    router.navigate(['/member'], { replaceUrl: true });
     return false;
   }
 
   return true;
-}
-}
+};

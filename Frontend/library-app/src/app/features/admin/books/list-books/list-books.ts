@@ -40,7 +40,7 @@ export class ListBooksComponent implements OnInit {
 
     this.bookService.getBooks().subscribe({
       next: (booksRes) => {
-
+ 
         this.copyService.getAll().subscribe({
           next: (copiesRes) => {
 

@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using LibraryManagement.Application.AuthorService;
 using LibraryManagement.API.DTOs.Author;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibraryManagement.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class AuthorController : ControllerBase
 {
     private readonly AuthorService _service;
@@ -33,6 +35,7 @@ public class AuthorController : ControllerBase
 
     // CREATE AUTHOR
     [HttpPost]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> CreateAuthor([FromBody] CreateAuthorDto dto)
     {
         var result = await _service.CreateAsync(dto);
@@ -41,6 +44,7 @@ public class AuthorController : ControllerBase
 
     // UPDATE AUTHOR
     [HttpPut("{id}")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> UpdateAuthor(Guid id, [FromBody] UpdateAuthorDto dto)
     {
         if (id != dto.Id)
@@ -52,6 +56,7 @@ public class AuthorController : ControllerBase
 
     // DELETE AUTHOR (Soft Delete)
     [HttpDelete("{id}")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> DeleteAuthor(Guid id)
     {
         await _service.DeleteAsync(id);

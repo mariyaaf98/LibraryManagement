@@ -1,71 +1,34 @@
-// using LibraryManagement.API.DTOs.Login;
-// using LibraryManagement.Application.UserInterface;
-// using LibraryManagement.Domain.UserEntity;
-
-
-
-// public class AuthService
-// {
-//     private readonly IUserRepository _userRepository;
-
-//     public AuthService(IUserRepository userRepository)
-//     {
-//         _userRepository = userRepository;
-//     }
-
-//     public async Task<User?> LoginAsync(LoginRequestDto request)
-// {
-//     var user = await _userRepository.GetByEmailAsync(request.Email);
-
-//     if (user == null || string.IsNullOrEmpty(user.PasswordHash))
-//         return null;
-
-//     try
-//     {
-//         var isValid = BCrypt.Net.BCrypt.Verify(
-//             request.Password, user.PasswordHash);
-
-//         return isValid ? user : null;
-//     }
-//     catch
-//     {
-//         return null;
-//     }
-// }
-// }
-
-
 using LibraryManagement.API.DTOs.Login;
 using LibraryManagement.Application.UserInterface;
-using LibraryManagement.Domain.UserEntity;
 using LibraryManagement.Domain.Enums;
+using LibraryManagement.Application.Common;
 public class AuthService
 {
     private readonly IUserRepository _userRepository;
+    private readonly TokenService _tokenService;
 
-    public AuthService(IUserRepository userRepository)
+    public AuthService(IUserRepository userRepository, TokenService tokenService)
     {
         _userRepository = userRepository;
+        _tokenService = tokenService;
     }
 
-    public async Task<User?> LoginAsync(LoginRequestDto request)
+    public async Task<string> LoginAsync(LoginRequestDto request)
     {
         var user = await _userRepository.GetByEmailAsync(request.Email);
 
         if (user == null)
-            return null;
-
-        Console.WriteLine($"User Status: {user.Status}");
+            throw new UnauthorizedAccessException("Invalid email or password");
 
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            return null;
+            throw new UnauthorizedAccessException("Invalid email or password");
 
-        // IMPORTANT CHECK
         if (user.Status == UserStatus.Blocked)
-        {
-            
             throw new UnauthorizedAccessException("User is blocked");
-        }
-        return user;
+
+        // Generate JWT token
+        var token = _tokenService.CreateToken(user);
+
+        return token;
     }
 }

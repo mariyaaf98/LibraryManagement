@@ -16,32 +16,27 @@ export class BookService {
 
   // GET ALL BOOKS
   getBooks(): Observable<BookResponseDto[]> {
-    return this.http.get<BookResponseDto[]>(this.apiUrl)
-      .pipe(catchError(this.handleError));
+    return this.http.get<BookResponseDto[]>(this.apiUrl);
   }
 
   // GET BOOK BY ID
   getBookById(id: string): Observable<BookResponseDto> {
-    return this.http.get<BookResponseDto>(`${this.apiUrl}/${id}`)
-      .pipe(catchError(this.handleError));
+    return this.http.get<BookResponseDto>(`${this.apiUrl}/${id}`);
   }
 
   // ADD BOOK
   addBook(book: CreateBookDto): Observable<void> {
-    return this.http.post<void>(this.apiUrl, book)
-      .pipe(catchError(this.handleError));
+    return this.http.post<void>(this.apiUrl, book);
   }
 
   // UPDATE BOOK
   updateBook(id: string, book: CreateBookDto): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, book)
-      .pipe(catchError(this.handleError));
+    return this.http.put<void>(`${this.apiUrl}/${id}`, book);
   }
 
   // DELETE BOOK
   deleteBook(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`)
-      .pipe(catchError(this.handleError));
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
   // SEARCH + FILTER
@@ -60,7 +55,7 @@ export class BookService {
     return this.http.get<BookResponseDto[]>(
       `${this.apiUrl}/search`,
       { params }
-    ).pipe(catchError(this.handleError));
+    );
   }
 
   // CLOUDINARY IMAGE UPLOAD
@@ -68,20 +63,20 @@ export class BookService {
     return this.http.post(
       'https://api.cloudinary.com/v1_1/dvblzijuc/image/upload',
       formData
-    ).pipe(catchError(this.handleError));
+    );
   }
 
-  // 🔥 CENTRAL ERROR HANDLER
-  private handleError(error: HttpErrorResponse) {
+  // // CENTRAL ERROR HANDLER
+  // private handleError(error: HttpErrorResponse) {
 
-    console.error('Backend Error:', error);
+  //   console.error('Backend Error:', error);
 
-    let message = 'Something went wrong';
+  //   let message = 'Something went wrong';
 
-    if (error.error?.message) {
-      message = error.error.message;
-    }
+  //   if (error.error?.message) {
+  //     message = error.error.message;
+  //   }
 
-    return throwError(() => new Error(message));
-  }
+  //   return throwError(() => new Error(message));
+  // }
 }

@@ -42,8 +42,20 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        //OnModelCreating is used to configure how entities are mapped to the database using Fluent API.
+
+        //ModelBuilder is the tool used inside OnModelCreating to define relationships, 
+        //keys, and property rules
+
+
+
+        //Calls the default EF configuration
         base.OnModelCreating(modelBuilder);
 
+
+
+        //enum converstion
         modelBuilder.Entity<User>()
         .Property(u => u.Status)
         .HasConversion<string>();
@@ -126,5 +138,10 @@ public class AppDbContext : DbContext
             .HasOne(bc => bc.Category)
             .WithMany(c => c.BookCategories)
             .HasForeignKey(bc => bc.CategoryId);
+
+
+        modelBuilder.Entity<Book>()
+            .HasIndex(b => b.Isbn)
+            .IsUnique();
     }
 }

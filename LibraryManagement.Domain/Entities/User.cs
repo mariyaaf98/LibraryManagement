@@ -2,6 +2,7 @@ using LibraryManagement.Domain.LoanEntity;
 using LibraryManagement.Domain.ReservationEntity;
 using LibraryManagement.Domain.Enums;
 namespace LibraryManagement.Domain.UserEntity;
+
 public class User : BaseEntity
 {
 
@@ -24,6 +25,9 @@ public class User : BaseEntity
     public decimal FinesOutstanding { get; set; }
 
     public ICollection<Loan> Loans { get; set; } = new List<Loan>();
-    
-     public ICollection<Reservation>? Reservations { get; set; }
+
+    public ICollection<Reservation>? Reservations { get; set; }
+
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
 }

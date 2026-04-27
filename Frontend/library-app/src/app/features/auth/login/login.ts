@@ -24,50 +24,53 @@ export class LoginComponent {
     this.showPassword = !this.showPassword;
   }
 
-    login() {
-      if (!this.email || !this.password) {
-        alert('Email and Password are required');
-        return;
-      }
-
-      const payload = {
-        email: this.email,
-        password: this.password
-      };
- 
-      this.authService.login(payload).subscribe({
-        next: (res: any) => {
-          console.log('Full response:', res);
-
-          // Store role safely
-          const role = res.role?.toUpperCase() || 'MEMBER';
-          localStorage.setItem('role', role);
-
-          // Store user info
-          const user = {
-            email: this.email,
-            name: this.email.split('@')[0]
-          };
-          localStorage.setItem('user', JSON.stringify(user));
-
-        
-          this.router.navigate(
-            [role === 'ADMIN' ? '/admin' : '/member'],
-            { replaceUrl: true }
-          );
-        },
-
-        error: (err) => {
-          console.log("ERROR", err);
-
-          const message =
-            err?.error?.message ||
-            err?.error?.title ||
-            "Login failed";
-
-          alert(message);
-        }
-      });
+  login() {
+    if (!this.email || !this.password) {
+      alert('Email and Password are required');
+      return;
     }
 
+    const payload = {
+      email: this.email,
+      password: this.password
+    };
+
+    this.authService.login(payload).subscribe({
+      next: (res: any) => {
+        console.log('Full response:', res);
+
+        localStorage.setItem('accessToken', res.accessToken);
+
+
+        // Store role safely
+        const role = res.role?.toUpperCase() || 'MEMBER';
+        localStorage.setItem('role', role);
+
+        // Store user info
+        const user = {
+          email: this.email,
+          name: this.email.split('@')[0]
+        };
+        localStorage.setItem('user', JSON.stringify(user));
+
+
+        this.router.navigate(
+          [role === 'ADMIN' ? '/admin' : '/member'],
+          { replaceUrl: true }
+        );
+      },
+
+      error: (err) => {
+        console.log("ERROR", err);
+
+        const message =
+          err?.error?.message ||
+          err?.error?.title ||
+          "Login failed";
+
+        alert(message);
+      }
+    });
   }
+
+}

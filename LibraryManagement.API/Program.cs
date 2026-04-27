@@ -64,7 +64,7 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<SubCategoryService>();
 builder.Services.AddScoped<CopyService>();
 builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<TokenService>(); 
+builder.Services.AddScoped<TokenService>();
 
 // CORS (Angular)
 builder.Services.AddCors(options =>
@@ -111,8 +111,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             OnMessageReceived = context =>
             {
-                // Read token from cookie
-                context.Token = context.Request.Cookies["jwt"];
+                var token = context.Request.Cookies["accessToken"];
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    context.Token = token;
+                }
+
                 return Task.CompletedTask;
             }
         };

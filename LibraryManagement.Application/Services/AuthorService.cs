@@ -15,7 +15,7 @@ public class AuthorService
         _authorRepository = authorRepository;
     }
 
-    
+
     public async Task<List<AuthorResponseDto>> GetAllAsync()
     {
         var authors = await _authorRepository.GetAllActiveAsync();
@@ -28,7 +28,7 @@ public class AuthorService
         }).ToList();
     }
 
-    
+
     public async Task<AuthorResponseDto> GetByIdAsync(Guid id)
     {
         var author = await _authorRepository.GetByIdAsync(id);
@@ -44,7 +44,7 @@ public class AuthorService
         };
     }
 
- 
+
     public async Task<AuthorResponseDto> CreateAsync(CreateAuthorDto dto)
     {
         var author = new Author
@@ -68,7 +68,7 @@ public class AuthorService
         };
     }
 
-    
+
     public async Task UpdateAsync(Guid id, UpdateAuthorDto dto)
     {
         var author = await _authorRepository.GetByIdAsync(id);
@@ -86,7 +86,7 @@ public class AuthorService
         await _authorRepository.UpdateAsync(author);
     }
 
-  
+
     public async Task DeleteAsync(Guid id)
     {
         var author = await _authorRepository.GetByIdAsync(id);
@@ -94,13 +94,18 @@ public class AuthorService
         if (author == null)
             throw new NotFoundException("Author not found");
 
+        var books = await _authorRepository.GetBooksByAuthorAsync(id);
+
+        if (books.Any())
+            throw new BadRequestException("Cannot delete author. Author has associated books.");
+
         author.IsDeleted = true;
         author.UpdatedAt = DateTime.UtcNow;
 
         await _authorRepository.UpdateAsync(author);
     }
 
- 
+
     public async Task<IEnumerable<BookResponseDto>> GetBooksByAuthorAsync(Guid authorId)
     {
         var books = await _authorRepository.GetBooksByAuthorAsync(authorId);

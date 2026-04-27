@@ -11,7 +11,7 @@ public class AuthController : ControllerBase
 
     public AuthController(AuthService authService)
     {
-        _authService = authService; 
+        _authService = authService;
     }
 
     [HttpPost("login")]
@@ -20,27 +20,31 @@ public class AuthController : ControllerBase
         if (request == null)
             return BadRequest("Invalid request");
 
-        
-        var token = await _authService.LoginAsync(request);
+        var (accessToken, refreshToken) = await _authService.LoginAsync(request);
 
-        //Store cookie
-        Response.Cookies.Append("jwt", token, new CookieOptions
+        // Store ACCESS TOKEN in cookie
+        Response.Cookies.Append("accessToken", accessToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = false, // change to true in production (HTTPS)
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTime.UtcNow.AddMinutes(1),//AddHours(1)
+            Path = "/"
+        });
+
+        // Store REFRESH TOKEN in cookie
+        Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
         {
             HttpOnly = true,
             Secure = false,
             SameSite = SameSiteMode.Lax,
-            Expires = DateTime.UtcNow.AddHours(1),
-
-            //Cookie available for all API routes
+            Expires = DateTime.UtcNow.AddDays(7),
             Path = "/"
         });
 
-      
-      //used to create, read, and validate JWT tokens
+        // Extract role 
         var handler = new JwtSecurityTokenHandler();
-
-        //decode JWT string and read its data
-        var jwtToken = handler.ReadJwtToken(token);
+        var jwtToken = handler.ReadJwtToken(accessToken);
 
         var role = jwtToken.Claims
             .FirstOrDefault(c => c.Type.Contains("role"))?.Value;
@@ -48,7 +52,50 @@ public class AuthController : ControllerBase
         return Ok(new
         {
             message = "Login successful",
-            role = role,
+            role = role
         });
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh()
+    {
+        var refreshToken = Request.Cookies["refreshToken"];
+
+        if (string.IsNullOrEmpty(refreshToken))
+            return Unauthorized();
+
+        var user = await _authService.GetUserByRefreshTokenAsync(refreshToken);
+
+        if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            return Unauthorized();
+
+        var newAccessToken = _authService.GenerateAccessToken(user);
+        var newRefreshToken = _authService.GenerateRefreshToken();
+
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await _authService.UpdateUserAsync(user);
+
+        // Store new ACCESS TOKEN in cookie
+        Response.Cookies.Append("accessToken", newAccessToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = false,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTime.UtcNow.AddHours(1),
+            Path = "/"
+        });
+
+        // Store new REFRESH TOKEN in cookie
+        Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = false,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTime.UtcNow.AddDays(7),
+            Path = "/"
+        });
+
+        return Ok(new { message = "Token refreshed" });
     }
 }

@@ -12,24 +12,7 @@
 
     <div class="row">
 
-      <!-- Barcode -->
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Barcode</label>
-        <input
-          type="text"
-          class="form-control"
-          name="barcode"
-          [(ngModel)]="copy.barcode"
-          placeholder="Enter barcode"
-          required
-          #barcode="ngModel"
-          [readonly]="isEditMode"
-        />
-
-        @if (barcode.invalid && barcode.touched) {
-          <small class="text-danger">Barcode is required</small>
-        }
-      </div>
+      <!-- Barcode (REMOVED INPUT, KEEP CLEAN) -->
 
       <!-- Location -->
       <div class="col-md-6 mb-3">
@@ -101,6 +84,13 @@
       </div>
 
     </div>
+
+    <!-- ✅ GENERATED BARCODE DISPLAY (ADDED ONLY) -->
+    @if (generatedBarcode) {
+      <div class="alert alert-success mt-3">
+        <strong>Generated Barcode:</strong> {{ generatedBarcode }}
+      </div>
+    }
 
     <!-- ACTIONS -->
     <div class="d-flex justify-content-end gap-2 mt-3">

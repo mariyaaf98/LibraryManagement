@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using LibraryManagement.Domain.UserEntity;
 namespace LibraryManagement.Application.Common;
+using System.Security.Cryptography;
+
 public class TokenService
 {
     public string CreateToken(User user)
@@ -40,13 +42,23 @@ public class TokenService
             //User data (email, role, id)
             claims: claims,
 
-            expires: DateTime.Now.AddHours(2),
+            expires: DateTime.Now.AddMinutes(15),
 
             // Security applied to token
             signingCredentials: creds
         );
 
-                                            // convert token C# object → string
+        // convert token C# object → string
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomBytes = new byte[32];
+
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomBytes);
+
+        return Convert.ToBase64String(randomBytes);
     }
 }

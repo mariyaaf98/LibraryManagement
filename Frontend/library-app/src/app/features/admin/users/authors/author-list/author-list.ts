@@ -20,8 +20,8 @@ export class AuthorListComponent implements OnInit {
     private authorService: AuthorService,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef 
-  ) {}
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
 
@@ -53,23 +53,25 @@ export class AuthorListComponent implements OnInit {
   }
 
   deleteAuthor(id: string) {
-    if (this.isReadOnly) return;
+  if (this.isReadOnly) return;
 
-    if (!confirm('Are you sure you want to delete this author?')) return;
+  if (!confirm('Are you sure you want to delete this author?')) return;
 
-    this.authorService.deleteAuthor(id).subscribe({
-      next: () => {
-        this.loadAuthors();
-
-  
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error(err)
-    });
-  }
+  this.authorService.deleteAuthor(id).subscribe({
+    next: () => {
+      this.loadAuthors();
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      // ✅ IMPORTANT FIX
+      const message = err?.error?.message || 'Something went wrong';
+      alert(message);
+    }
+  });
+}
 
   goToDetails(id: string) {
-  if (!this.isReadOnly) return; // only for member
-  this.router.navigate(['/member/authors', id]);
-}
+    if (!this.isReadOnly) return; // only for member
+    this.router.navigate(['/member/authors', id]);
+  }
 }

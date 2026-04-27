@@ -14,13 +14,13 @@ import { FormsModule } from '@angular/forms';
 })
 export class AddCopyComponent implements OnInit {
 
+  generatedBarcode: string = '';
   bookId!: string;
   copyId!: string;
   isEditMode = false;
 
   copy: CreateCopy = {
     bookId: '',
-    barcode: '',
     acquisitionDate: '',
     location: '',
     status: 'AVAILABLE',
@@ -31,8 +31,8 @@ export class AddCopyComponent implements OnInit {
     private route: ActivatedRoute,
     private service: CopyService,
     private router: Router,
-    private cdr: ChangeDetectorRef  
-  ) {}
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
 
@@ -48,7 +48,6 @@ export class AddCopyComponent implements OnInit {
         if (existing) {
           this.copy = {
             bookId: existing.bookId,
-            barcode: existing.barcode,
             acquisitionDate: existing.acquisitionDate
               ? existing.acquisitionDate.split('T')[0]
               : '',
@@ -74,66 +73,43 @@ export class AddCopyComponent implements OnInit {
     }
   }
 
-  // save(): void {
-
-  //   if (!this.copy.barcode?.trim()) {
-  //     alert('Barcode is required');
-  //     return;
-  //   }
-
-  //   if (this.isEditMode) {
-
-  //     this.service.update(this.copyId, this.copy).subscribe({
-  //       next: () => {
-  //         this.router.navigate(['/admin/copies', this.bookId]);
-  //       },
-  //       error: (err: any) => {
-  //         console.error(err);
-  //       }
-  //     });
-
-  //   } else {
-
-  //     this.service.create(this.copy).subscribe({
-  //       next: () => {
-  //         this.router.navigate(['/admin/copies', this.bookId]);
-  //       },
-  //       error: (err: any) => {
-  //         console.error(err);
-  //       }
-  //     });
-
-  //   }
-  // }
-
-
 
   save(): void {
 
-  if (!this.copy.barcode?.trim()) {
-    alert('Barcode is required');
-    return;
+
+    const request = this.isEditMode
+      ? this.service.update(this.copyId, this.copy)
+      : this.service.create(this.copy);
+
+    request.subscribe({
+      next: (res: any) => {
+
+        if (!this.isEditMode) {
+          this.generatedBarcode = res.barcode;
+          alert('Generated Barcode: ' + res.barcode);
+
+          // ⏳ Delay navigation so user sees it
+          setTimeout(() => {
+            this.router.navigate(
+              ['/admin/copies', this.bookId],
+              { state: { refresh: true } }
+            );
+          }, 1000);
+
+          return;
+        }
+
+        this.router.navigate(
+          ['/admin/copies', this.bookId],
+          { state: { refresh: true } }
+        );
+      },
+      error: (err: any) => {
+        console.error(err);
+        alert(err.error?.message || 'Something went wrong');
+      }
+    });
   }
-
-  const request = this.isEditMode
-    ? this.service.update(this.copyId, this.copy)
-    : this.service.create(this.copy);
-
-  request.subscribe({
-    next: () => {
-
-      // 🔥 Send refresh flag
-      this.router.navigate(
-        ['/admin/copies', this.bookId],
-        { state: { refresh: true } }
-      );
-
-    },
-    error: (err: any) => {
-      console.error(err);
-    }
-  });
-}
 
   goBack(): void {
     this.router.navigate(['/admin/copies', this.bookId]);

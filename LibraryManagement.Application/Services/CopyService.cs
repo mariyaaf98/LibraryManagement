@@ -51,6 +51,11 @@ public class CopyService
         };
     }
 
+    private string GenerateBarcode()
+    {
+        return "BC-" + Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper();
+    }
+
     // CREATE
     public async Task<CopyResponseDto> CreateAsync(CreateCopyDto dto)
     {
@@ -60,7 +65,7 @@ public class CopyService
         var copy = new Copy
         {
             BookId = dto.BookId,
-            Barcode = dto.Barcode,
+            Barcode = GenerateBarcode(),
             AcquisitionDate = dto.AcquisitionDate?.ToUniversalTime(),
             Location = dto.Location,
             Status = "AVAILABLE",

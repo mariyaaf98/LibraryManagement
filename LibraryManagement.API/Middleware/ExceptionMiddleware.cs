@@ -21,6 +21,9 @@ public class ExceptionMiddleware
         {
             var statusCode = ex switch
             {
+
+
+
                 NotFoundException => HttpStatusCode.NotFound,
                 BadRequestException => HttpStatusCode.BadRequest,
                 UnauthorizedAccessException => HttpStatusCode.Unauthorized,
@@ -28,7 +31,7 @@ public class ExceptionMiddleware
                 _ => HttpStatusCode.InternalServerError
             };
 
-            context.Response.StatusCode = (int)statusCode;
+
             context.Response.ContentType = "application/json";
 
             var result = JsonSerializer.Serialize(new

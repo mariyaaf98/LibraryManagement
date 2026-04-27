@@ -32,7 +32,7 @@ public class CopiesController : ControllerBase
 
     // CREATE
     [HttpPost]
-    [Authorize(Roles = "ADMIN")]
+    [Authorize]
     public async Task<IActionResult> Create([FromBody] CreateCopyDto dto)
     {
         var result = await _service.CreateAsync(dto);
